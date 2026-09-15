@@ -371,6 +371,7 @@ DEFAULT_APPEARANCE = {
     "font_heading": "Anton",
     "font_body": "Space Grotesk",
     "cta_login": "Masuk",
+    "custom_fonts": [],
     "hero_headline": "Bangun Versi Terkuat Dirimu.",
     "hero_subheadline": "Coaching bodybuilding 1-on-1 yang sistematis: nutrisi presisi, program latihan terperiodisasi, dan evaluasi mingguan bersama coach profesional.",
     "hero_cta": "Mulai Coaching",

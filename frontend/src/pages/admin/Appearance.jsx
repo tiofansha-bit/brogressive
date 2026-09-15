@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Monitor, Smartphone, Save, Rocket, RotateCcw, Upload } from "lucide-react";
+import { Loader2, Monitor, Smartphone, Save, Rocket, RotateCcw, Upload, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 const SECTION_LABELS = { hero: "Hero", about: "Tentang", services: "Layanan", testimonials: "Testimoni", faq: "FAQ", contact: "Kontak" };
+const HEADING_FONTS = ["Anton", "Bebas Neue", "Barlow Condensed", "Archivo Black", "Oswald"];
+const BODY_FONTS = ["Space Grotesk", "Inter", "DM Sans", "Archivo"];
 
 function MiniLanding({ a, mobile }) {
   const primary = a.primary_color || "#FFFFFF";
@@ -38,6 +40,7 @@ export default function AdminAppearance() {
   const [versions, setVersions] = useState([]);
   const [mobile, setMobile] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [newFont, setNewFont] = useState("");
   const { reloadBrand } = useBrand();
 
   const load = useCallback(async () => {
@@ -56,6 +59,19 @@ export default function AdminAppearance() {
   const setJson = (k) => (e) => {
     try { set(k, JSON.parse(e.target.value)); e.target.setCustomValidity(""); }
     catch { e.target.setCustomValidity("JSON tidak valid"); }
+  };
+
+  const addFont = () => {
+    const name = newFont.trim().replace(/[^A-Za-z0-9 ]/g, "").replace(/\s+/g, " ");
+    if (!name) { toast.error("Nama font tidak valid"); return; }
+    const customs = draft.custom_fonts || [];
+    if (HEADING_FONTS.includes(name) || BODY_FONTS.includes(name) || customs.includes(name)) {
+      toast.error("Font sudah ada di daftar");
+      return;
+    }
+    set("custom_fonts", [...customs, name]);
+    setNewFont("");
+    toast.success(`Font "${name}" ditambahkan — Simpan Draft & Publish untuk menerapkan`);
   };
 
   const saveDraft = async () => {
@@ -154,7 +170,7 @@ export default function AdminAppearance() {
                 <Select value={draft.font_heading || "Anton"} onValueChange={(v) => set("font_heading", v)}>
                   <SelectTrigger data-testid="ap-font-heading" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["Anton", "Bebas Neue", "Barlow Condensed", "Archivo Black", "Oswald"].map((f) => (
+                    {[...new Set([...HEADING_FONTS, ...(draft.custom_fonts || [])])].map((f) => (
                       <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
                     ))}
                   </SelectContent>
@@ -165,14 +181,25 @@ export default function AdminAppearance() {
                 <Select value={draft.font_body || "Space Grotesk"} onValueChange={(v) => set("font_body", v)}>
                   <SelectTrigger data-testid="ap-font-body" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["Space Grotesk", "Inter", "DM Sans", "Archivo"].map((f) => (
+                    {[...new Set([...BODY_FONTS, ...(draft.custom_fonts || [])])].map((f) => (
                       <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <p className="text-[11px] text-muted-foreground">Perubahan font berlaku di landing page dan seluruh aplikasi setelah Publish.</p>
+            <div className="flex gap-2">
+              <Input data-testid="ap-custom-font" placeholder="Tambah font Google Fonts (mis. Teko)" className="bg-background" value={newFont} onChange={(e) => setNewFont(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addFont()} />
+              <Button data-testid="ap-add-font" variant="secondary" onClick={addFont}><Plus className="w-4 h-4" /> Tambah</Button>
+            </div>
+            {(draft.custom_fonts || []).length > 0 && (
+              <div className="flex gap-1.5 flex-wrap">
+                {draft.custom_fonts.map((f) => (
+                  <span key={f} className="text-[10px] px-2 py-1 rounded-full border border-border text-muted-foreground" style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span>
+                ))}
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground">Font kustom diambil dari Google Fonts (fonts.google.com) — salin nama font persis seperti di sana. Berlaku di landing page & aplikasi setelah Publish.</p>
           </section>
 
           <section className="bg-card border border-border rounded-lg p-4 space-y-3">
