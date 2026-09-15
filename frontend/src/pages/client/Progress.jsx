@@ -54,7 +54,7 @@ export default function ClientProgress() {
               <YAxis domain={["auto", "auto"]} tick={{ fontSize: 9, fill: "#A1A1AA" }} width={36} />
               <Tooltip contentStyle={{ background: "#18181F", border: "1px solid rgba(255,255,255,0.1)", fontSize: 12 }} />
               <Line type="monotone" dataKey="weight" stroke="#71717a" dot={false} name="Harian" />
-              <Line type="monotone" dataKey="avg7" stroke="#FF2E00" strokeWidth={2} dot={false} name="Rata-rata 7 hari" />
+              <Line type="monotone" dataKey="avg7" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="Rata-rata 7 hari" />
             </LineChart>
           </ResponsiveContainer>
         )}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Barlow+Condensed:wght@500;600;700;800&family=Oswald:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -12,8 +12,8 @@
         --card-foreground: 0 0% 98%;
         --popover: 240 13% 9%;
         --popover-foreground: 0 0% 98%;
-        --primary: 11 100% 50%;
-        --primary-foreground: 0 0% 100%;
+        --primary: 0 0% 100%;
+        --primary-foreground: 0 0% 5%;
         --secondary: 240 6% 14%;
         --secondary-foreground: 0 0% 98%;
         --muted: 240 6% 14%;
@@ -24,10 +24,12 @@
         --destructive-foreground: 0 0% 98%;
         --border: 240 6% 16%;
         --input: 240 6% 16%;
-        --ring: 11 100% 50%;
+        --ring: 0 0% 100%;
         --radius: 0.5rem;
-        --neon: 186 100% 50%;
-        --success: 160 84% 39%;
+        --neon: 0 0% 60%;
+        --success: 0 0% 75%;
+        --font-heading: 'Anton';
+        --font-body: 'Space Grotesk';
     }
     .dark {
         --background: 240 10% 4%;
@@ -36,8 +38,8 @@
         --card-foreground: 0 0% 98%;
         --popover: 240 13% 9%;
         --popover-foreground: 0 0% 98%;
-        --primary: 11 100% 50%;
-        --primary-foreground: 0 0% 100%;
+        --primary: 0 0% 100%;
+        --primary-foreground: 0 0% 5%;
         --secondary: 240 6% 14%;
         --secondary-foreground: 0 0% 98%;
         --muted: 240 6% 14%;
@@ -48,7 +50,7 @@
         --destructive-foreground: 0 0% 98%;
         --border: 240 6% 16%;
         --input: 240 6% 16%;
-        --ring: 11 100% 50%;
+        --ring: 0 0% 100%;
     }
 }
 
@@ -58,14 +60,14 @@
     }
     body {
         @apply bg-background text-foreground;
-        font-family: 'Inter', sans-serif;
+        font-family: var(--font-body, 'Inter'), sans-serif;
         -webkit-font-smoothing: antialiased;
     }
 }
 
 @layer utilities {
     .font-display {
-        font-family: 'Barlow Condensed', sans-serif;
+        font-family: var(--font-heading, 'Barlow Condensed'), sans-serif;
     }
     .font-num {
         font-family: 'JetBrains Mono', monospace;
@@ -80,7 +82,7 @@
         background-color: #22222b;
     }
     .glow-primary {
-        box-shadow: 0 0 24px rgba(255, 46, 0, 0.25);
+        box-shadow: 0 0 24px rgba(255, 255, 255, 0.15);
     }
     .eyebrow {
         @apply text-xs font-num uppercase tracking-widest text-muted-foreground;

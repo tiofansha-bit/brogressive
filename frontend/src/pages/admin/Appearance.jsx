@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Monitor, Smartphone, Save, Rocket, RotateCcw, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 const SECTION_LABELS = { hero: "Hero", about: "Tentang", services: "Layanan", testimonials: "Testimoni", faq: "FAQ", contact: "Kontak" };
 
 function MiniLanding({ a, mobile }) {
-  const primary = a.primary_color || "#FF2E00";
+  const primary = a.primary_color || "#FFFFFF";
   return (
     <div className={`border border-border rounded-lg overflow-hidden bg-[#0A0A0C] ${mobile ? "max-w-[280px]" : "w-full"} mx-auto`}>
       <div className="relative h-48">
@@ -20,8 +21,8 @@ function MiniLanding({ a, mobile }) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] to-transparent" />
         <div className="absolute bottom-3 left-3 right-3">
           <p className="text-[9px] uppercase tracking-widest text-zinc-400">{a.tagline}</p>
-          <h3 className="font-display font-extrabold uppercase text-lg leading-tight text-white">{a.hero_headline}</h3>
-          <span className="inline-block mt-2 px-3 py-1 rounded text-[10px] font-bold text-white" style={{ backgroundColor: primary }}>{a.hero_cta}</span>
+          <h3 className="font-extrabold uppercase text-lg leading-tight text-white" style={{ fontFamily: `'${a.font_heading || "Anton"}', sans-serif` }}>{a.hero_headline}</h3>
+          <span className="inline-block mt-2 px-3 py-1 rounded text-[10px] font-bold" style={{ backgroundColor: primary, color: "#0A0A0C" }}>{a.hero_cta}</span>
         </div>
       </div>
       {a.sections?.about && <div className="p-3"><p className="text-[10px] font-bold uppercase text-white">{a.about_title}</p><p className="text-[9px] text-zinc-400 line-clamp-2">{a.about_text}</p></div>}
@@ -142,6 +143,36 @@ export default function AdminAppearance() {
               </div>
             </div>
             <div><Label>Sambutan di halaman login</Label><Input data-testid="ap-login-welcome" className="mt-1 bg-background" value={draft.login_welcome || ""} onChange={(e) => set("login_welcome", e.target.value)} /></div>
+            <div><Label>Teks tombol login / header</Label><Input data-testid="ap-cta-login" className="mt-1 bg-background" value={draft.cta_login || ""} onChange={(e) => set("cta_login", e.target.value)} /></div>
+          </section>
+
+          <section className="bg-card border border-border rounded-lg p-4 space-y-3">
+            <h2 className="font-display text-lg font-bold uppercase">Tipografi</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Font Heading</Label>
+                <Select value={draft.font_heading || "Anton"} onValueChange={(v) => set("font_heading", v)}>
+                  <SelectTrigger data-testid="ap-font-heading" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Anton", "Bebas Neue", "Barlow Condensed", "Archivo Black", "Oswald"].map((f) => (
+                      <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Font Body</Label>
+                <Select value={draft.font_body || "Space Grotesk"} onValueChange={(v) => set("font_body", v)}>
+                  <SelectTrigger data-testid="ap-font-body" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Space Grotesk", "Inter", "DM Sans", "Archivo"].map((f) => (
+                      <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <p className="text-[11px] text-muted-foreground">Perubahan font berlaku di landing page dan seluruh aplikasi setelah Publish.</p>
           </section>
 
           <section className="bg-card border border-border rounded-lg p-4 space-y-3">
@@ -154,6 +185,15 @@ export default function AdminAppearance() {
             </div>
             <div><Label>Judul Tentang</Label><Input data-testid="ap-about-title" className="mt-1 bg-background" value={draft.about_title || ""} onChange={(e) => set("about_title", e.target.value)} /></div>
             <div><Label>Teks Tentang</Label><Textarea data-testid="ap-about-text" rows={3} className="mt-1 bg-background" value={draft.about_text || ""} onChange={(e) => set("about_text", e.target.value)} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Label kecil "Tentang"</Label><Input data-testid="ap-label-about" className="mt-1 bg-background" value={draft.labels?.about_eyebrow || ""} onChange={(e) => setNested("labels", "about_eyebrow", e.target.value)} /></div>
+              <div><Label>Label kecil "Layanan"</Label><Input data-testid="ap-label-services-eyebrow" className="mt-1 bg-background" value={draft.labels?.services_eyebrow || ""} onChange={(e) => setNested("labels", "services_eyebrow", e.target.value)} /></div>
+              <div><Label>Judul section Layanan</Label><Input data-testid="ap-label-services-title" className="mt-1 bg-background" value={draft.labels?.services_title || ""} onChange={(e) => setNested("labels", "services_title", e.target.value)} /></div>
+              <div><Label>Label kecil "Testimoni"</Label><Input data-testid="ap-label-testi-eyebrow" className="mt-1 bg-background" value={draft.labels?.testimonials_eyebrow || ""} onChange={(e) => setNested("labels", "testimonials_eyebrow", e.target.value)} /></div>
+              <div><Label>Judul section Testimoni</Label><Input data-testid="ap-label-testi-title" className="mt-1 bg-background" value={draft.labels?.testimonials_title || ""} onChange={(e) => setNested("labels", "testimonials_title", e.target.value)} /></div>
+              <div><Label>Label kecil "FAQ"</Label><Input data-testid="ap-label-faq-eyebrow" className="mt-1 bg-background" value={draft.labels?.faq_eyebrow || ""} onChange={(e) => setNested("labels", "faq_eyebrow", e.target.value)} /></div>
+              <div><Label>Judul section FAQ</Label><Input data-testid="ap-label-faq-title" className="mt-1 bg-background" value={draft.labels?.faq_title || ""} onChange={(e) => setNested("labels", "faq_title", e.target.value)} /></div>
+            </div>
             <div>
               <Label>Layanan (JSON array: {"[{\"title\": \"...\", \"desc\": \"...\"}]"})</Label>
               <Textarea data-testid="ap-services-json" rows={4} className="mt-1 bg-background font-num text-xs" defaultValue={JSON.stringify(draft.services || [], null, 1)} onBlur={setJson("services")} />

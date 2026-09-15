@@ -30,6 +30,8 @@ export function applyBrand(a) {
   }
   const acc = hexToHsl(a.accent_color);
   if (acc) document.documentElement.style.setProperty("--neon", acc);
+  if (a.font_heading) document.documentElement.style.setProperty("--font-heading", `'${a.font_heading}'`);
+  if (a.font_body) document.documentElement.style.setProperty("--font-body", `'${a.font_body}'`);
   if (a.seo?.title) document.title = a.seo.title;
   if (a.seo?.description) {
     let m = document.querySelector('meta[name="description"]');

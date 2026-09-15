@@ -50,7 +50,11 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2">
-            <Dumbbell className="w-7 h-7 text-primary" />
+            {appearance?.logo_url ? (
+              <img src={appearance.logo_url} alt="logo" className="h-9 w-9 object-contain rounded" />
+            ) : (
+              <Dumbbell className="w-7 h-7 text-primary" />
+            )}
             <span className="font-display font-bold text-2xl uppercase">{appearance?.brand_name || "BROGRESSIVE"}</span>
           </Link>
           <p className="text-sm text-muted-foreground mt-2">{appearance?.login_welcome || "Selamat datang kembali."}</p>

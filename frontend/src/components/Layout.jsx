@@ -97,8 +97,8 @@ export default function AppLayout() {
             {appearance?.logo_url ? (
               <img src={appearance.logo_url} alt="logo" className="h-7 w-auto" />
             ) : (
-              <span className="font-display font-800 text-xl font-bold uppercase tracking-wide">
-                BRO<span className="text-primary">GRESSIVE</span>
+              <span className="font-display text-xl font-bold uppercase tracking-wide">
+                {appearance?.brand_name || "BROGRESSIVE"}
               </span>
             )}
           </Link>

@@ -16,7 +16,7 @@ function ScaleInput({ label, k, data, setData }) {
   return (
     <div>
       <div className="flex justify-between"><Label className="text-sm">{label}</Label><span className="font-num text-sm text-primary">{data[k]}</span></div>
-      <input data-testid={`ci-${k}`} type="range" min="1" max="10" value={data[k]} onChange={(e) => setData({ ...data, [k]: Number(e.target.value) })} className="w-full mt-2 accent-[#FF2E00] h-12" />
+      <input data-testid={`ci-${k}`} type="range" min="1" max="10" value={data[k]} onChange={(e) => setData({ ...data, [k]: Number(e.target.value) })} className="w-full mt-2 accent-primary h-12" />
       <div className="flex justify-between text-[10px] text-muted-foreground"><span>Buruk</span><span>Sangat baik</span></div>
     </div>
   );

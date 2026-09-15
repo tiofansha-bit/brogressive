@@ -22,7 +22,7 @@ export default function Landing() {
             <span className="font-display font-bold text-xl uppercase tracking-wide">{a.brand_name}</span>
           </div>
           <Link to="/login">
-            <Button data-testid="landing-login-btn" className="font-semibold">Masuk</Button>
+            <Button data-testid="landing-login-btn" className="font-semibold">{a.cta_login || "Masuk"}</Button>
           </Link>
         </div>
       </header>
@@ -50,7 +50,7 @@ export default function Landing() {
 
       {s.about && (
         <section className="max-w-6xl mx-auto px-4 py-24" data-testid="landing-about">
-          <p className="eyebrow mb-3">Tentang Kami</p>
+          <p className="eyebrow mb-3">{a.labels?.about_eyebrow || "Tentang Kami"}</p>
           <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight max-w-2xl">{a.about_title}</h2>
           <p className="mt-5 text-zinc-300 max-w-2xl leading-relaxed">{a.about_text}</p>
         </section>
@@ -58,8 +58,8 @@ export default function Landing() {
 
       {s.services && (a.services || []).length > 0 && (
         <section className="max-w-6xl mx-auto px-4 pb-24" data-testid="landing-services">
-          <p className="eyebrow mb-3">Layanan</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">Program Coaching</h2>
+          <p className="eyebrow mb-3">{a.labels?.services_eyebrow || "Layanan"}</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">{a.labels?.services_title || "Program Coaching"}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
             {a.services.map((sv, i) => (
               <div key={i} data-testid={`landing-service-${i}`} className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
@@ -74,8 +74,8 @@ export default function Landing() {
       {s.testimonials && (a.testimonials || []).length > 0 && (
         <section className="bg-card/50 border-y border-border" data-testid="landing-testimonials">
           <div className="max-w-6xl mx-auto px-4 py-24">
-            <p className="eyebrow mb-3">Testimoni</p>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">Kata Mereka</h2>
+            <p className="eyebrow mb-3">{a.labels?.testimonials_eyebrow || "Testimoni"}</p>
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">{a.labels?.testimonials_title || "Kata Mereka"}</h2>
             <div className="grid sm:grid-cols-2 gap-4 mt-8">
               {a.testimonials.map((t, i) => (
                 <figure key={i} data-testid={`landing-testimonial-${i}`} className="bg-background border border-border rounded-lg p-6">
@@ -90,8 +90,8 @@ export default function Landing() {
 
       {s.faq && (a.faq || []).length > 0 && (
         <section className="max-w-3xl mx-auto px-4 py-24" data-testid="landing-faq">
-          <p className="eyebrow mb-3">FAQ</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight mb-8">Pertanyaan Umum</h2>
+          <p className="eyebrow mb-3">{a.labels?.faq_eyebrow || "FAQ"}</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight mb-8">{a.labels?.faq_title || "Pertanyaan Umum"}</h2>
           <Accordion type="single" collapsible>
             {a.faq.map((f, i) => (
               <AccordionItem key={i} value={`faq-${i}`} data-testid={`landing-faq-${i}`}>

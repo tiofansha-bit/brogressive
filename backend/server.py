@@ -366,8 +366,11 @@ DEFAULT_APPEARANCE = {
     "brand_name": "BROGRESSIVE",
     "tagline": "1 on 1 Online Coaching",
     "logo_url": "",
-    "primary_color": "#FF2E00",
-    "accent_color": "#00F0FF",
+    "primary_color": "#FFFFFF",
+    "accent_color": "#A3A3A3",
+    "font_heading": "Anton",
+    "font_body": "Space Grotesk",
+    "cta_login": "Masuk",
     "hero_headline": "Bangun Versi Terkuat Dirimu.",
     "hero_subheadline": "Coaching bodybuilding 1-on-1 yang sistematis: nutrisi presisi, program latihan terperiodisasi, dan evaluasi mingguan bersama coach profesional.",
     "hero_cta": "Mulai Coaching",
@@ -396,13 +399,35 @@ DEFAULT_APPEARANCE = {
     "sections": {"hero": True, "about": True, "services": True, "testimonials": True, "faq": True, "contact": True},
     "footer_text": "© 2026 BROGRESSIVE. Coaching bukan pengganti layanan medis.",
     "login_welcome": "Selamat datang kembali. Saatnya progres.",
+    "labels": {
+        "about_eyebrow": "Tentang Kami",
+        "services_eyebrow": "Layanan",
+        "services_title": "Program Coaching",
+        "testimonials_eyebrow": "Testimoni",
+        "testimonials_title": "Kata Mereka",
+        "faq_eyebrow": "FAQ",
+        "faq_title": "Pertanyaan Umum",
+    },
 }
+
+_logo_base = os.environ.get("FRONTEND_URL", "").rstrip("/")
+if _logo_base:
+    DEFAULT_APPEARANCE["logo_url"] = f"{_logo_base}/api/uploads/logo.jpg"
+
+
+def merge_appearance(value):
+    if not isinstance(value, dict):
+        return dict(DEFAULT_APPEARANCE)
+    out = {**DEFAULT_APPEARANCE, **value}
+    for k in ("contact", "social", "seo", "sections", "labels"):
+        out[k] = {**DEFAULT_APPEARANCE.get(k, {}), **(value.get(k) or {})}
+    return out
 
 
 @api_router.get("/appearance/published")
 async def get_published_appearance():
     doc = await db.settings.find_one({"key": "appearance_published"}, {"_id": 0})
-    return doc["value"] if doc else DEFAULT_APPEARANCE
+    return merge_appearance(doc["value"]) if doc else DEFAULT_APPEARANCE
 
 
 @api_router.get("/appearance")
@@ -410,8 +435,8 @@ async def get_appearance(user: dict = Depends(require_admin)):
     draft = await db.settings.find_one({"key": "appearance_draft"}, {"_id": 0})
     published = await db.settings.find_one({"key": "appearance_published"}, {"_id": 0})
     versions = await db.settings.find_one({"key": "appearance_versions"}, {"_id": 0})
-    return {"draft": draft["value"] if draft else (published["value"] if published else DEFAULT_APPEARANCE),
-            "published": published["value"] if published else DEFAULT_APPEARANCE,
+    return {"draft": merge_appearance(draft["value"]) if draft else (merge_appearance(published["value"]) if published else DEFAULT_APPEARANCE),
+            "published": merge_appearance(published["value"]) if published else DEFAULT_APPEARANCE,
             "versions": versions["value"] if versions else []}
 
 

@@ -148,7 +148,7 @@ export default function ClientWorkout() {
           <h2 className="font-display text-lg font-bold uppercase flex items-center gap-2"><Trophy className="w-4 h-4 text-primary" /> Ringkasan Sesi</h2>
           <div>
             <div className="flex justify-between"><Label className="text-sm">Seberapa berat sesi ini?</Label><span className="font-num text-primary">{difficulty}/10</span></div>
-            <input data-testid="workout-difficulty" type="range" min="1" max="10" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full mt-2 accent-[#FF2E00] h-10" />
+            <input data-testid="workout-difficulty" type="range" min="1" max="10" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full mt-2 accent-primary h-10" />
           </div>
           <label className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-md p-3 cursor-pointer">
             <Checkbox data-testid="workout-pain-flag" checked={pain} onCheckedChange={setPain} />
