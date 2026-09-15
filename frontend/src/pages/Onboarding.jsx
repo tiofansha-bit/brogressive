@@ -24,6 +24,29 @@ const PARQ = [
   { key: "parq_pregnant", q: "Apakah Anda sedang hamil atau menyusui?" },
 ];
 
+function OnbField({ label, k, type = "text", placeholder = "", testid, value, onChange }) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      <Input data-testid={testid || `ob-${k}`} type={type} value={value} onChange={onChange} placeholder={placeholder} className="mt-1 bg-background h-12" />
+    </div>
+  );
+}
+
+function OnbSelect({ label, k, options, testid, value, onValueChange }) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger data-testid={testid || `ob-${k}`} className="mt-1 bg-background h-12"><SelectValue placeholder="Pilih..." /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export default function Onboarding() {
   const { user, refresh } = useAuth();
   const navigate = useNavigate();
@@ -61,7 +84,7 @@ export default function Onboarding() {
     try {
       const { data: r } = await API.put("/onboarding", { data: merged() });
       setCompleteness(r.completeness);
-      if (next) setStep(next);
+      if (next !== undefined && next !== null) setStep(next);
     } catch (e) {
       toast.error(fmtErr(e));
     } finally {
@@ -86,24 +109,10 @@ export default function Onboarding() {
   const set = (k) => (e) => setData({ ...data, [k]: e.target.value });
   const setSel = (k) => (v) => setData({ ...data, [k]: v });
 
-  const F = ({ label, k, type = "text", placeholder = "", testid }) => (
-    <div>
-      <Label>{label}</Label>
-      <Input data-testid={testid || `ob-${k}`} type={type} value={data[k] || ""} onChange={set(k)} placeholder={placeholder} className="mt-1 bg-background h-12" />
-    </div>
-  );
-
-  const Sel = ({ label, k, options, testid }) => (
-    <div>
-      <Label>{label}</Label>
-      <Select value={data[k] || ""} onValueChange={setSel(k)}>
-        <SelectTrigger data-testid={testid || `ob-${k}`} className="mt-1 bg-background h-12"><SelectValue placeholder="Pilih..." /></SelectTrigger>
-        <SelectContent>
-          {options.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
-        </SelectContent>
-      </Select>
-    </div>
-  );
+  const F = (label, k, opts = {}) =>
+    OnbField({ label, k, value: data[k] || "", onChange: set(k), ...opts });
+  const Sel = (label, k, options) =>
+    OnbSelect({ label, k, options, value: data[k] || "", onValueChange: setSel(k) });
 
   return (
     <div className="min-h-screen bg-background" data-testid="onboarding-page">
@@ -117,52 +126,58 @@ export default function Onboarding() {
 
         <div className="mt-8 space-y-4 bg-card border border-border rounded-lg p-6">
           {step === 0 && (<>
-            <F label="Nama lengkap" k="full_name" />
-            <F label="Tanggal lahir" k="birth_date" type="date" />
-            <Sel label="Jenis kelamin" k="gender" options={[{ v: "male", l: "Pria" }, { v: "female", l: "Wanita" }]} />
-            <F label="Nomor WhatsApp" k="phone" placeholder="08xxxxxxxxxx" />
-            <F label="Kota / Domisili" k="city" />
+            {F("Nama lengkap", "full_name")}
+            {F("Tanggal lahir", "birth_date", { type: "date" })}
+            {Sel("Jenis kelamin", "gender", [{ v: "male", l: "Pria" }, { v: "female", l: "Wanita" }])}
+            {F("Nomor WhatsApp", "phone", { placeholder: "08xxxxxxxxxx" })}
+            {F("Kota / Domisili", "city")}
           </>)}
           {step === 1 && (<>
-            <F label="Tinggi badan (cm)" k="height_cm" type="number" />
-            <F label="Berat badan saat ini (kg)" k="weight_kg" type="number" />
-            <F label="Target berat (kg, opsional)" k="target_weight" type="number" />
-            <F label="Lingkar pinggang (cm, opsional)" k="waist_cm" type="number" />
+            {F("Tinggi badan (cm)", "height_cm", { type: "number" })}
+            {F("Berat badan saat ini (kg)", "weight_kg", { type: "number" })}
+            {F("Target berat (kg, opsional)", "target_weight", { type: "number" })}
+            {F("Lingkar pinggang (cm, opsional)", "waist_cm", { type: "number" })}
           </>)}
           {step === 2 && (<>
-            <Sel label="Tujuan utama" k="goal" options={[
+            {Sel("Tujuan utama", "goal", [
               { v: "fat_loss", l: "Menurunkan lemak (fat loss)" },
               { v: "muscle_gain", l: "Menambah massa otot" },
               { v: "recomposition", l: "Rekomposisi (otot naik, lemak turun)" },
               { v: "strength", l: "Meningkatkan kekuatan" },
               { v: "lifestyle", l: "Gaya hidup sehat / maintenance" },
-            ]} />
-            <F label="Target tanggal (opsional)" k="target_date" type="date" />
+            ])}
+            {F("Target tanggal (opsional)", "target_date", { type: "date" })}
             <div>
               <Label>Ceritakan motivasi & hambatan Anda</Label>
               <Textarea data-testid="ob-goal_notes" value={data.goal_notes || ""} onChange={set("goal_notes")} className="mt-1 bg-background" rows={3} />
             </div>
           </>)}
           {step === 3 && (<>
-            <Sel label="Pengalaman latihan" k="training_experience" options={[
-              { v: "beginner", l: "Pemula (< 1 tahun)" }, { v: "intermediate", l: "Menengah (1-3 tahun)" }, { v: "advanced", l: "Lanjutan (> 3 tahun)" }]} />
-            <Sel label="Berapa hari per minggu Anda bisa latihan?" k="training_days" options={[2, 3, 4, 5, 6].map((n) => ({ v: String(n), l: `${n} hari` }))} />
-            <Sel label="Peralatan yang tersedia" k="equipment" options={[
-              { v: "full_gym", l: "Gym lengkap" }, { v: "basic_gym", l: "Gym sederhana" }, { v: "home_db", l: "Rumah (dumbbell)" }, { v: "bodyweight", l: "Tanpa alat" }]} />
+            {Sel("Seberapa aktif keseharian Anda (di luar latihan)?", "activity_level", [
+              { v: "sedentary", l: "Duduk terus (kerja meja, jarang jalan)" },
+              { v: "light", l: "Ringan (jalan kaki ringan 1-3x/minggu)" },
+              { v: "moderate", l: "Sedang (aktif bergerak / olahraga 3-5x/minggu)" },
+              { v: "active", l: "Aktif (kerja fisik / olahraga 6-7x/minggu)" },
+              { v: "very_active", l: "Sangat aktif (kerja fisik berat + latihan rutin)" }])}
+            {Sel("Pengalaman latihan", "training_experience", [
+              { v: "beginner", l: "Pemula (< 1 tahun)" }, { v: "intermediate", l: "Menengah (1-3 tahun)" }, { v: "advanced", l: "Lanjutan (> 3 tahun)" }])}
+            {Sel("Berapa hari per minggu Anda bisa latihan?", "training_days", [2, 3, 4, 5, 6].map((n) => ({ v: String(n), l: `${n} hari` })))}
+            {Sel("Peralatan yang tersedia", "equipment", [
+              { v: "full_gym", l: "Gym lengkap" }, { v: "basic_gym", l: "Gym sederhana" }, { v: "home_db", l: "Rumah (dumbbell)" }, { v: "bodyweight", l: "Tanpa alat" }])}
             <div>
               <Label>Riwayat cedera / batasan gerak (opsional)</Label>
               <Textarea data-testid="ob-injuries" value={data.injuries || ""} onChange={set("injuries")} className="mt-1 bg-background" rows={2} />
             </div>
           </>)}
           {step === 4 && (<>
-            <Sel label="Berapa kali makan per hari yang Anda inginkan?" k="meals_per_day" options={[2, 3, 4, 5].map((n) => ({ v: String(n), l: `${n}x makan` }))} />
-            <Sel label="Pola makan" k="diet_pattern" options={[
-              { v: "no_restriction", l: "Tidak ada pantangan" }, { v: "halal", l: "Halal" }, { v: "vegetarian", l: "Vegetarian" }, { v: "other", l: "Lainnya" }]} />
+            {Sel("Berapa kali makan per hari yang Anda inginkan?", "meals_per_day", [2, 3, 4, 5].map((n) => ({ v: String(n), l: `${n}x makan` })))}
+            {Sel("Pola makan", "diet_pattern", [
+              { v: "no_restriction", l: "Tidak ada pantangan" }, { v: "halal", l: "Halal" }, { v: "vegetarian", l: "Vegetarian" }, { v: "other", l: "Lainnya" }])}
             <div>
               <Label>Alergi / intoleransi makanan (opsional)</Label>
               <Textarea data-testid="ob-allergies" value={data.allergies || ""} onChange={set("allergies")} className="mt-1 bg-background" rows={2} />
             </div>
-            <F label="Makanan yang tidak Anda sukai (opsional)" k="dislikes" />
+            {F("Makanan yang tidak Anda sukai (opsional)", "dislikes")}
           </>)}
           {step === 5 && (
             <div className="space-y-4">
@@ -203,7 +218,8 @@ export default function Onboarding() {
         </div>
 
         <div className="flex justify-between mt-6">
-          <Button data-testid="ob-back" variant="outline" disabled={step === 0 || saving} onClick={() => save(step - 1)}>
+          <Button data-testid="ob-back" variant="outline" disabled={saving}
+            onClick={() => (step === 0 ? navigate(-1) : save(step - 1))}>
             <ArrowLeft className="w-4 h-4" /> Kembali
           </Button>
           {step < STEPS.length - 1 ? (

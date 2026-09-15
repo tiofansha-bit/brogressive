@@ -1,5 +1,16 @@
 # PRD — BROGRESSIVE 1 on 1 Online Coaching
 
+## Update 2026-09-15 (Sesi Import & Setup + Bug Fix)
+- Repo github.com/tiofansha-bit/brogressive branch `main` di-import ke /app (rsync, .env & .emergent lokal dipertahankan).
+- backend/.env: JWT_SECRET digenerate, ADMIN_EMAIL=tiofansha@gmail.com, ADMIN_PASSWORD=Brogressive#2026, AUTH_GOOGLE_ENABLED=false, EMAIL_ENABLED=false, FRONTEND_URL=preview URL. frontend/.env: REACT_APP_GOOGLE_AUTH_ENABLED=false, REACT_APP_PASSWORD_RESET_ENABLED=false.
+- Stub: /api/auth/google-session -> 503 saat AUTH_GOOGLE_ENABLED=false; send_password_reset_email no-op & forgot-password generic 200 tanpa token saat EMAIL_ENABLED=false; tombol Google & link Lupa Password disembunyikan di frontend. Reset password manual via admin (PATCH /api/admin/users/{id}).
+- Bug fix (terverifikasi testing agent iter 2-4, backend 51/51 PASS):
+  1. Login.jsx: tab Masuk/Daftar type=button, autoComplete/name, autoFocus, hint "Minimal 8 karakter".
+  2. Onboarding.jsx: komponen F/Sel inline -> remount input per ketukan (fokus hilang = "ketik tidak sustain"); fix OnbField/OnbSelect module-level.
+  3. Onboarding.jsx: tombol Kembali di step 0 disabled permanen -> kini navigate(-1); step>0 save(step-1).
+  4. Onboarding.jsx: wizard tidak menanyakan activity_level yang diwajibkan REQUIRED_ONBOARDING -> completeness mentok 90% & finish selalu 400; fix select activity_level di step 3. Full 7 langkah tuntas -> /app/today.
+- Kredensial terdokumentasi di /app/memory/test_credentials.md.
+
 ## Problem Statement (ringkasan)
 Platform coaching bodybuilding/transformation 1-on-1 production-ready (React + FastAPI + MongoDB, PWA-ready).
 Bahasa Indonesia, Asia/Jakarta, metrik, IDR. Brand: BROGRESSIVE (dapat diganti via Admin Appearance).

@@ -1,0 +1,33 @@
+{
+  "summary": "BROGRESSIVE (imported repo) — backend + frontend testing in new preview env. Extended backend_test.py to 51 tests (all PASS) with new coverage for stubbed Google OAuth (503), stubbed Email/Forgot-password (generic 200), /auth/register + short-password 400, and client-A→client-B RBAC 403. Frontend Playwright verified the bug-fix on /login register form: fields (register-name-input, login-email-input, login-password-input) accept sequential typing without losing focus/value, hint 'Minimal 8 karakter' is present, submit 'Buat Akun' creates account and redirects to /app. Google button hidden, 'Lupa password?' link hidden. Mobile 390px has no horizontal overflow. Landing page renders normally.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/login register", "issues": ["Client-side visible error for password <8 char was not detected by generic .error/[role=alert] selector — validation likely surfaced as a toast (Sonner) which auto-dismisses. Server correctly returns 400 with 'Password minimal 8 karakter'. Consider inline error text under the password field for stronger a11y (aria-describedby)."]},
+      {"screen": "Console (public pages)", "issues": ["Still logs a 401 from /api/auth/me on /login before user authenticates — cosmetic, expected in current AuthContext design (documented in iteration_1)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "(Optional) Surface password<8 validation as inline text under the password input in addition to toast for better UX/a11y.",
+    "(Optional, from prior iteration) Gate initial /api/auth/me call in AuthContext on public routes to silence 401 noise.",
+    "(Cleanup) backend/.env has CORS_ORIGINS=\"*\" that is unused because CORSMiddleware uses FRONTEND_URL — remove to reduce confusion."
+  ],
+  "critical_code_review_comments": [
+    "server.py monolith 1500 lines — split into routers (auth/admin/plans/logs/checkins/messages/payments) for maintainability.",
+    "GOOGLE_AUTH_ENABLED / EMAIL_ENABLED guards are correctly implemented: /auth/google-session → 503, /auth/forgot-password → generic 200 no-op. Verified via tests.",
+    "/auth/register password<8 returns 400 with clear detail 'Password minimal 8 karakter'. Good.",
+    "RBAC verified: authenticated client cannot access another client's /clients/{id}/overview (403); own overview 200.",
+    "Admin seed at startup with tiofansha@gmail.com / Brogressive#2026 confirmed working.",
+    "Login form fix (type=button on tabs, autoComplete, autoFocus, hint text) fully resolves the reported form-entry bug — verified by scripted typing and successful register→/app redirect."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (51/51)", "frontend": "100% for tested flows (register form entry, redirect, stub visibility, mobile overflow, landing)"},
+  "test_credentials": "Admin tiofansha@gmail.com / Brogressive#2026 works. /app/memory/test_credentials.md is accurate. Per-run test users created by backend_test.py with random 6-char suffix.",
+  "seed_data_creation": "Same as iteration_1 plus one extra registered client per run (test_register_<RUN>@test.com / Passw0rd123) and one unassigned client per run. Admin auto-seeded by backend startup.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run backend suite: `pytest /app/backend/tests/backend_test.py -n 0 -v` (serial due to shared state fixture). All 51 tests must pass. The stub tests explicitly assert 503 for /auth/google-session and 200 generic for /auth/forgot-password — if AUTH_GOOGLE_ENABLED or EMAIL_ENABLED are flipped to true in backend/.env, these tests will need updates. Frontend register-form fix is confirmed working in new preview URL https://coaching-onboard.preview.emergentagent.com."
+}

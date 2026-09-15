@@ -45,6 +45,9 @@ export default function Login() {
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
+  const googleEnabled = process.env.REACT_APP_GOOGLE_AUTH_ENABLED === "true";
+  const resetEnabled = process.env.REACT_APP_PASSWORD_RESET_ENABLED === "true";
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4" data-testid="login-page">
       <div className="w-full max-w-md">
@@ -62,11 +65,11 @@ export default function Login() {
 
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="grid grid-cols-2 gap-1 bg-secondary rounded-md p-1 mb-6">
-            <button data-testid="login-tab-masuk" onClick={() => setMode("login")}
+            <button type="button" data-testid="login-tab-masuk" onClick={() => setMode("login")}
               className={`py-2 rounded text-sm font-semibold transition-colors ${mode === "login" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
               Masuk
             </button>
-            <button data-testid="login-tab-daftar" onClick={() => setMode("register")}
+            <button type="button" data-testid="login-tab-daftar" onClick={() => setMode("register")}
               className={`py-2 rounded text-sm font-semibold transition-colors ${mode === "register" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
               Daftar
             </button>
@@ -76,16 +79,17 @@ export default function Login() {
             {mode === "register" && (
               <div>
                 <Label htmlFor="name">Nama Lengkap</Label>
-                <Input id="name" data-testid="register-name-input" value={form.name} onChange={set("name")} required className="mt-1 bg-background" />
+                <Input id="name" name="name" autoComplete="name" autoFocus data-testid="register-name-input" value={form.name} onChange={set("name")} required className="mt-1 bg-background" />
               </div>
             )}
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" data-testid="login-email-input" value={form.email} onChange={set("email")} required className="mt-1 bg-background" />
+              <Input id="email" name="email" type="email" autoComplete="email" data-testid="login-email-input" value={form.email} onChange={set("email")} required className="mt-1 bg-background" />
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" data-testid="login-password-input" value={form.password} onChange={set("password")} required minLength={8} className="mt-1 bg-background" />
+              <Input id="password" name="password" type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} data-testid="login-password-input" value={form.password} onChange={set("password")} required minLength={8} className="mt-1 bg-background" />
+              {mode === "register" && <p className="text-xs text-muted-foreground mt-1">Minimal 8 karakter.</p>}
             </div>
             {error && <p data-testid="login-error" className="text-sm text-destructive">{error}</p>}
             <Button data-testid="login-submit-button" type="submit" disabled={loading} className="w-full h-11 font-bold uppercase tracking-wider">
@@ -93,15 +97,19 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-            <div className="relative text-center"><span className="bg-card px-2 text-xs text-muted-foreground">atau</span></div>
-          </div>
-          <Button data-testid="google-login-button" variant="outline" onClick={googleLogin} className="w-full h-11">
-            Lanjutkan dengan Google
-          </Button>
+          {googleEnabled && (
+            <>
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+                <div className="relative text-center"><span className="bg-card px-2 text-xs text-muted-foreground">atau</span></div>
+              </div>
+              <Button data-testid="google-login-button" variant="outline" onClick={googleLogin} className="w-full h-11">
+                Lanjutkan dengan Google
+              </Button>
+            </>
+          )}
 
-          {mode === "login" && (
+          {mode === "login" && resetEnabled && (
             <p className="text-center mt-4">
               <Link to="/forgot-password" data-testid="forgot-password-link" className="text-xs text-muted-foreground hover:text-primary transition-colors">
                 Lupa password?

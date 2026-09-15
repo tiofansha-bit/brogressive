@@ -1,0 +1,34 @@
+{
+  "summary": "Frontend-only regression for /onboarding wizard bug fixes. Verified: (1) sustain typing char-by-char on ob-full_name, ob-phone, ob-city (step 0) and ob-height_cm, ob-weight_kg (step 1) — focus retained and each character persisted (activeElement testid unchanged). (2) 'Kembali' button behaves correctly: from step 1 it returns to step 0 with previously typed data intact ('BudiSantoso' / '08123456789' / 'Jakarta'); from step 0 it navigates back out of /onboarding (to /login). (3) Registration -> auto-redirect to /onboarding works. (4) Mobile 390px: no horizontal overflow, Back/Lanjut buttons visible. (5) Select dropdowns (gender, goal, training_experience, training_days, equipment, meals_per_day) work and completeness % increases (54% -> 63% after step 2). HOWEVER a critical regression discovered: full 7-step flow cannot be completed — 'Selesai & Mulai' returns HTTP 400 because backend REQUIRED_ONBOARDING requires 'activity_level' which is NOT collected anywhere in the wizard. Completeness caps at 90% (10/11) so /api/onboarding/complete fails with 'Lengkapi data wajib terlebih dahulu (90%)'.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "/api/onboarding/complete", "issue": "Rejects with 400 'Lengkapi data wajib terlebih dahulu (90%)' because REQUIRED_ONBOARDING (server.py:717) includes 'activity_level' which the wizard never asks. Completeness maxes at 10/11=90%. No user can finish onboarding. Also note: REQUIRED_ONBOARDING does NOT include 'training_experience', 'phone', 'city' which the wizard prompts. Frontend/backend field contract is out of sync.", "priority": "CRITICAL"}
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Onboarding finish (step 6 -> /app/today)", "issue": "Frontend collects training_experience but backend expects activity_level. 'Selesai & Mulai' always fails with 400. Full onboarding flow blocked.", "affected_selectors": ["[data-testid=\"ob-finish\"]"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "FIX field contract mismatch in /app/frontend/src/pages/Onboarding.jsx step 3: rename 'training_experience' -> 'activity_level' (or add a dedicated activity_level select) so backend REQUIRED_ONBOARDING list is satisfied. Alternatively update backend REQUIRED_ONBOARDING in /app/backend/server.py:717 to match what the wizard actually asks: replace 'activity_level' with 'training_experience' (and consider adding phone/city if desired). Retest full 7-step finish flow.",
+    "Consider adding a data-testid on the completeness span for stable assertions."
+  ],
+  "critical_code_review_comments": [
+    "Onboarding.jsx: OnbField/OnbSelect module-level fix is correct — typing focus regression resolved.",
+    "Onboarding.jsx line ~216 back handler correctly branches step===0 -> navigate(-1) vs save(step-1).",
+    "server.py:717 REQUIRED_ONBOARDING lists a field ('activity_level') that no client UI collects. This is a hard bug blocking every new client from completing onboarding."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "80% (bug fixes verified, full-flow regression blocked by field contract)"},
+  "test_credentials": "Registered ephemeral: onb.<ts>@mail.com / password123 (client role)",
+  "seed_data_creation": "Two test clients created via /api/auth/register during test (onb.1789452405@mail.com and onbm.<ts>@mail.com).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fixes for typing sustain and Back button are VERIFIED PASS. Do not re-test those in isolation. Focus retest on: after main agent aligns activity_level vs training_experience (either FE or BE), re-run full 7-step onboarding to confirm redirect to /app/today. Use a freshly registered account; existing accounts may already have partial profile state.",
+  "rca of the issue": "Frontend wizard collects 'training_experience' (step 3) but backend REQUIRED_ONBOARDING in server.py:717 requires 'activity_level'. calc_completeness therefore counts 10/11 filled = 90%, and /api/onboarding/complete raises HTTPException(400) when completeness < 100. Reproduction: register new client, fill all 7 wizard steps, tick consent, click Selesai & Mulai -> POST /api/onboarding/complete returns 400. Mitigation: align field name between FE and BE (recommend renaming 'training_experience' -> 'activity_level' in Onboarding.jsx step 3, since 'activity_level' better reflects the field semantics used by other parts of a coaching backend)."
+}

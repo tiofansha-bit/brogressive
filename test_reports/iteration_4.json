@@ -1,0 +1,23 @@
+{
+  "summary": "Frontend-only retest of Brogressive onboarding wizard after activity_level fix. Registered fresh account finish.<ts>@mail.com and completed all 7 steps end-to-end. All acceptance criteria PASS: activity_level select present at step 3, completeness progression 36% -> 54% -> 63% -> 90% -> 100%, POST /api/onboarding/complete returned 200 with completeness:100, redirect to /app/today succeeded, reload of /app/today stays on /app/today (no bounce to /onboarding), typing sustain confirmed on ob-full_name across keystrokes, back button from step1 preserves step0 data, mobile 390px has no horizontal overflow (scrollW==clientW==390).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Onboarding.jsx save() calls PUT /onboarding on every Lanjut click even without changes — acceptable but could debounce.",
+    "PARQ answers stored in separate state; consider persisting parq_answers into data so completeness reflects sooner (already handled via merged())."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped)", "frontend": "100%"},
+  "test_credentials": "Registered fresh: finish.<timestamp>@mail.com / password123",
+  "seed_data_creation": "One fresh user via UI register during test.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Critical activity_level bug from iteration_3 is fully resolved. Full 7-step onboarding finish flow works end-to-end. If further retest needed, always register a brand new email (existing accounts may carry partial state). Radix Select items should be selected via get_by_role('option', name=<label>, exact=True), not data-value attribute.",
+  "rca of the issue": "iter_3 bug: backend REQUIRED_ONBOARDING included activity_level but wizard omitted it -> completeness capped at 90% -> POST /onboarding/complete returned 400. Fix in Onboarding.jsx step 3 adds OnbSelect for activity_level (sedentary/light/moderate/active/very_active). Verified in iter_4: after selecting moderate, PUT /onboarding returns completeness:90 for step 3 and 100 after meals_per_day; complete endpoint returns 200."
+}

@@ -10,7 +10,7 @@ import uuid
 import pytest
 import requests
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://coach-athlete-hub-14.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://coaching-onboard.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
 ADMIN_EMAIL = "tiofansha@gmail.com"
@@ -418,6 +418,57 @@ class TestRBAC:
         r = state["coach_sess"].get(f"{API}/clients/{other_id}/overview")
         assert r.status_code == 403
 
-    def test_google_session_invalid(self):
+    def test_google_session_disabled_503(self):
+        # AUTH_GOOGLE_ENABLED=false in this env → must return 503, not attempt external call
         r = requests.post(f"{API}/auth/google-session", json={"session_id": "invalid_" + RUN})
-        assert r.status_code == 401
+        assert r.status_code == 503, f"expected 503 (stub disabled) got {r.status_code}: {r.text}"
+
+    def test_forgot_password_stub_generic_200(self):
+        # EMAIL_ENABLED=false → returns generic 200 without side-effects
+        r = requests.post(f"{API}/auth/forgot-password", json={"email": "nonexistent@example.com"})
+        assert r.status_code == 200
+        assert "message" in r.json()
+
+    def test_register_password_too_short_400(self):
+        r = requests.post(f"{API}/auth/register", json={
+            "name": "Short", "email": f"short_{RUN}@test.com", "password": "abc123"})
+        assert r.status_code == 400
+        assert "8" in (r.json().get("detail") or "")
+
+    def test_register_and_login_new_client(self, state):
+        email = f"test_register_{RUN}@test.com"
+        pwd = "Passw0rd123"
+        s = requests.Session()
+        r = s.post(f"{API}/auth/register", json={
+            "name": "Test Register", "email": email, "password": pwd})
+        assert r.status_code == 200, r.text
+        u = r.json()
+        assert u["email"] == email
+        assert u["role"] == "client"
+        # Auth cookie set → /auth/me returns user
+        r = s.get(f"{API}/auth/me")
+        assert r.status_code == 200 and r.json()["email"] == email
+        # Fresh login on new session
+        s2 = requests.Session()
+        _login(s2, email, pwd)
+        r = s2.get(f"{API}/auth/me")
+        assert r.status_code == 200
+        state["registered_client_email"] = email
+        state["registered_client_sess"] = s2
+        state["registered_client_id"] = u["user_id"]
+
+    def test_google_session_invalid(self):
+        # Kept for backward compat; disabled env still returns 503
+        r = requests.post(f"{API}/auth/google-session", json={"session_id": "invalid2_" + RUN})
+        assert r.status_code == 503
+
+    def test_client_A_cannot_access_client_B_overview(self, state):
+        # RBAC: authenticated client cannot access another client's overview
+        r = state["registered_client_sess"].get(
+            f"{API}/clients/{state['client']['user_id']}/overview")
+        assert r.status_code == 403, f"expected 403 got {r.status_code}"
+
+    def test_client_can_access_own_overview(self, state):
+        r = state["registered_client_sess"].get(
+            f"{API}/clients/{state['registered_client_id']}/overview")
+        assert r.status_code == 200, r.text

@@ -36,6 +36,8 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 EMAIL_BASE_URL = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip().rstrip("/") or "https://integrations.emergentagent.com"
 EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY", "")
 EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME") or "BROGRESSIVE"
+EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED", "true").strip().lower() == "true"
+GOOGLE_AUTH_ENABLED = os.environ.get("AUTH_GOOGLE_ENABLED", "true").strip().lower() == "true"
 
 
 def now_iso():
@@ -162,6 +164,9 @@ async def notify(user_id: str, ntype: str, title: str, body: str = "", link: str
 # ---------- Email (password reset only) ----------
 
 async def send_password_reset_email(to_email: str, token: str) -> bool:
+    if not EMAIL_ENABLED:
+        logger.info("Email disabled (EMAIL_ENABLED=false); skip reset email to %s", to_email)
+        return False
     base = os.environ.get("FRONTEND_URL", "").rstrip("/")
     link = f"{base}/reset-password?token={token}"
     if not EMAIL_KEY or EMAIL_KEY.startswith("{") or not base.startswith("https://"):
@@ -287,6 +292,8 @@ async def forgot_password(request: Request, background_tasks: BackgroundTasks):
     body = await request.json()
     email = (body.get("email") or "").strip().lower()
     generic = {"message": "Jika email terdaftar, link reset telah dikirim."}
+    if not EMAIL_ENABLED:
+        return generic
     since = (datetime.now(timezone.utc) - timedelta(minutes=15)).isoformat()
     await db.password_reset_requests.insert_one({"email": email, "created_at": now_iso()})
     if await db.password_reset_requests.count_documents({"email": email, "created_at": {"$gt": since}}) > 5:
@@ -326,6 +333,8 @@ async def reset_password(request: Request):
 
 @api_router.post("/auth/google-session")
 async def google_session(request: Request, response: Response):
+    if not GOOGLE_AUTH_ENABLED:
+        raise HTTPException(503, "Login Google sedang dinonaktifkan. Gunakan email & password.")
     body = await request.json()
     session_id = body.get("session_id")
     if not session_id:

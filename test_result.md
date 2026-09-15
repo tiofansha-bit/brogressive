@@ -101,3 +101,112 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+## user_problem_statement: Import repo BROGRESSIVE (github.com/tiofansha-bit/brogressive, branch main), install deps, jalankan app dengan auth email+password (JWT), Google OAuth & Email Relay di-stub/nonaktif, forgot/reset password via email nonaktif (reset manual via admin), seed admin, smoke test (register, login, dashboard, RBAC 403). Tambahan user: perbaiki kesulitan mengentry di form pendaftaran akun.
+
+## backend:
+##   - task: "Import & install (backend deps, .env JWT_SECRET/flags)"
+##     implemented: true
+##     working: true
+##     file: "backend/server.py, backend/.env"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Repo di-rsync ke /app. pip install OK (httpx dsb). .env: JWT_SECRET, ADMIN_EMAIL=tiofansha@gmail.com, ADMIN_PASSWORD=Brogressive#2026, AUTH_GOOGLE_ENABLED=false, EMAIL_ENABLED=false, FRONTEND_URL=preview URL. Seed admin jalan via startup event."
+##   - task: "Stub Google OAuth & Email Relay"
+##     implemented: true
+##     working: true
+##     file: "backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "POST /api/auth/google-session -> 503 saat AUTH_GOOGLE_ENABLED=false (terverifikasi curl). send_password_reset_email no-op saat EMAIL_ENABLED=false; forgot-password tetap return generic 200 tanpa membuat token (terverifikasi curl)."
+##   - task: "Smoke: admin login, register, RBAC 403"
+##     implemented: true
+##     working: true
+##     file: "backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Admin login OK, register client OK via curl ke preview URL. RBAC 403 cross-user belum diverifikasi — minta testing agent cek (client A akses /api/clients/{clientB}/overview harus 403)."
+##
+## frontend:
+##   - task: "Stub tombol Google & link lupa password"
+##     implemented: true
+##     working: true
+##     file: "frontend/src/pages/Login.jsx"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: true
+##         -agent: "main"
+##         -comment: "Tombol 'Lanjutkan dengan Google' & link 'Lupa password?' disembunyikan saat REACT_APP_GOOGLE_AUTH_ENABLED/REACT_APP_PASSWORD_RESET_ENABLED != 'true'. Terverifikasi via playwright: GOOGLE_BTN_HIDDEN=True."
+##   - task: "Fix kesulitan entry form pendaftaran"
+##     implemented: true
+##     working: "NA"
+##     file: "frontend/src/pages/Login.jsx"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: "NA"
+##         -agent: "main"
+##         -comment: "Reproduksi via playwright: mengetik nama/email/password berhasil & nilai tersimpan (tidak ada bug controlled input). Perbaikan UX yang diterapkan: type=button pada tab Masuk/Daftar, atribut name+autoComplete (name/email/new-password), autoFocus field nama, hint 'Minimal 8 karakter' di mode daftar. Perlu verifikasi testing agent bahwa flow daftar end-to-end lancar (isi form -> Buat Akun -> masuk /app)."
+##   - task: "Fix onboarding wizard: ketikan tidak sustain + tombol Kembali mati"
+##     implemented: true
+##     working: "NA"
+##     file: "frontend/src/pages/Onboarding.jsx"
+##     stuck_count: 1
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: false
+##         -agent: "user"
+##         -comment: "User melaporkan: form pendaftaran masih bug, ketik huruf tidak sustain, tombol kembali tidak berfungsi."
+##         -working: "NA"
+##         -agent: "main"
+##         -comment: "Root cause: komponen F dan Sel didefinisikan inline di dalam render Onboarding -> identitas komponen baru tiap render -> React remount input tiap ketukan -> fokus hilang per huruf. Fix: OnbField & OnbSelect dipindah ke module level, dipanggil via helper F()/Sel() sebagai fungsi. Tombol Kembali di step 0 sebelumnya disabled permanen -> kini navigate(-1); step>0 tetap save(step-1). Verifikasi awal playwright: ketik huruf per huruf fokus tetap; Kembali step1->step0 data utuh."
+##
+##   - task: "Fix kontrak field onboarding: activity_level hilang (finish 400, completeness mentok 90%)"
+##     implemented: true
+##     working: "NA"
+##     file: "frontend/src/pages/Onboarding.jsx"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: false
+##         -agent: "testing"
+##         -comment: "CRITICAL dari iteration_3: /api/onboarding/complete selalu 400 karena REQUIRED_ONBOARDING (server.py) mewajibkan activity_level yang tidak pernah ditanyakan wizard. Tidak ada user yang bisa menyelesaikan onboarding."
+##         -working: "NA"
+##         -agent: "main"
+##         -comment: "Ditambahkan select activity_level (sedentary/light/moderate/active/very_active, testid ob-activity_level) di step 3 (Latihan) Onboarding.jsx. training_experience tetap ada. Perlu retest full 7 langkah sampai redirect /app/today."
+##
+## metadata:
+##   created_by: "main_agent"
+##   version: "1.0"
+##   test_sequence: 3
+##   run_ui: true
+##
+## test_plan:
+##   current_focus:
+##     - "Fix kesulitan entry form pendaftaran"
+##     - "Stub tombol Google & link lupa password"
+##     - "Smoke: admin login, register, RBAC 403"
+##   stuck_tasks: []
+##   test_all: false
+##   test_priority: "high_first"
+##
+## agent_communication:
+##     -agent: "main"
+##     -message: "Import repo main selesai, app jalan di preview URL. Kredensial admin: tiofansha@gmail.com / Brogressive#2026 (juga di /app/memory/test_credentials.md). Fokus test: (1) form pendaftaran mudah diisi & submit berhasil sampai redirect /app, (2) tombol Google & link lupa password hilang, (3) backend: /api/auth/google-session=503, forgot-password=200 generic, RBAC 403 lintas-user, admin login + dashboard."
