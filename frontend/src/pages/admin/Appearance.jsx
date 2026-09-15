@@ -17,7 +17,8 @@ const BODY_FONTS = ["Space Grotesk", "Inter", "DM Sans", "Archivo"];
 function MiniLanding({ a, mobile }) {
   const primary = a.primary_color || "#FFFFFF";
   return (
-    <div className={`border border-border rounded-lg overflow-hidden bg-[#0A0A0C] ${mobile ? "max-w-[280px]" : "w-full"} mx-auto`}>
+    <div className={`border border-border rounded-lg overflow-hidden ${mobile ? "max-w-[280px]" : "w-full"} mx-auto`}
+      style={{ backgroundColor: a.bg_color || "#0A0A0C", backgroundImage: a.bg_image ? `linear-gradient(rgba(5,5,5,0.82), rgba(5,5,5,0.82)), url('${a.bg_image}')` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
       <div className="relative h-48">
         {a.hero_image && <img src={a.hero_image} alt="hero" className="absolute inset-0 w-full h-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] to-transparent" />
@@ -131,6 +132,17 @@ export default function AdminAppearance() {
     } catch (err) { toast.error(fmtErr(err)); }
   };
 
+  const uploadBg = async (e) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    try {
+      const url = await uploadFile(f);
+      set("bg_image", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      toast.success("Gambar background terunggah");
+    } catch (err) { toast.error(fmtErr(err)); }
+  };
+
   const dirty = JSON.stringify(draft) !== JSON.stringify(published);
 
   return (
@@ -184,6 +196,25 @@ export default function AdminAppearance() {
             </div>
             <div><Label>Sambutan di halaman login</Label><Input data-testid="ap-login-welcome" className="mt-1 bg-background" value={draft.login_welcome || ""} onChange={(e) => set("login_welcome", e.target.value)} /></div>
             <div><Label>Teks tombol login / header</Label><Input data-testid="ap-cta-login" className="mt-1 bg-background" value={draft.cta_login || ""} onChange={(e) => set("cta_login", e.target.value)} /></div>
+            <div>
+              <Label>Warna Background Website</Label>
+              <div className="flex gap-2 mt-1">
+                <input data-testid="ap-bg-color" type="color" value={draft.bg_color || "#0A0A0C"} onChange={(e) => set("bg_color", e.target.value)} className="w-12 h-10 rounded cursor-pointer bg-background border border-border" />
+                <Input value={draft.bg_color || ""} onChange={(e) => set("bg_color", e.target.value)} className="bg-background font-num text-xs" />
+              </div>
+            </div>
+            <div>
+              <Label>Gambar Background Website (opsional)</Label>
+              <div className="flex gap-2 mt-1 items-center">
+                <Input data-testid="ap-bg-image" className="bg-background text-xs" value={draft.bg_image || ""} onChange={(e) => set("bg_image", e.target.value)} placeholder="URL gambar background atau unggah" />
+                <label className="shrink-0">
+                  <input type="file" accept="image/*" className="hidden" data-testid="ap-bg-upload" onChange={uploadBg} />
+                  <span className="inline-flex items-center gap-1 px-3 h-9 rounded-md border border-border text-xs cursor-pointer hover:bg-accent"><Upload className="w-3 h-3" /> Upload</span>
+                </label>
+                {draft.bg_image && <Button data-testid="ap-bg-clear" size="sm" variant="ghost" onClick={() => set("bg_image", "")}>Hapus</Button>}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1">Gambar otomatis diberi overlay gelap agar teks tetap terbaca. Berlaku di landing page setelah Publish.</p>
+            </div>
           </section>
 
           <section className="bg-card border border-border rounded-lg p-4 space-y-3">

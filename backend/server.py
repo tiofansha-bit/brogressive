@@ -368,6 +368,8 @@ DEFAULT_APPEARANCE = {
     "logo_url": "",
     "primary_color": "#FFFFFF",
     "accent_color": "#A3A3A3",
+    "bg_color": "#0A0A0C",
+    "bg_image": "",
     "font_heading": "Anton",
     "font_body": "Space Grotesk",
     "cta_login": "Masuk",

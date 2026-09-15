@@ -10,7 +10,10 @@ export default function Landing() {
   const s = a.sections || {};
 
   return (
-    <div className="min-h-screen bg-background text-foreground" data-testid="landing-page">
+    <div className="min-h-screen bg-background text-foreground" data-testid="landing-page"
+      style={a.bg_image
+        ? { backgroundImage: `linear-gradient(rgba(5,5,5,0.82), rgba(5,5,5,0.82)), url('${a.bg_image}')`, backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }
+        : a.bg_color ? { backgroundColor: a.bg_color } : undefined}>
       <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2" data-testid="landing-brand">

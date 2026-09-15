@@ -69,6 +69,15 @@ export function applyBrand(a) {
     if (!fileNames.has(a.font_body)) loadGoogleFont(a.font_body);
   }
   (a.custom_fonts || []).forEach((f) => { if (!fileNames.has(f)) loadGoogleFont(f); });
+  if (a.bg_color) document.body.style.backgroundColor = a.bg_color;
+  if (a.bg_image) {
+    document.body.style.backgroundImage = `linear-gradient(rgba(5,5,5,0.88), rgba(5,5,5,0.88)), url('${a.bg_image}')`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+  } else {
+    document.body.style.backgroundImage = "";
+  }
   if (a.seo?.title) document.title = a.seo.title;
   if (a.seo?.description) {
     let m = document.querySelector('meta[name="description"]');
