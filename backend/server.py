@@ -1488,7 +1488,16 @@ async def shutdown_db_client():
 
 
 app.include_router(api_router)
-app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
+
+class UploadsStaticFiles(StaticFiles):
+    async def get_response(self, path, scope):
+        resp = await super().get_response(path, scope)
+        resp.headers.setdefault("Access-Control-Allow-Origin", "*")
+        return resp
+
+
+app.mount("/api/uploads", UploadsStaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,

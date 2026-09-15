@@ -94,8 +94,7 @@ export default function AdminAppearance() {
     if (!name) { toast.error("Isi nama font terlebih dahulu"); return; }
     try {
       const url = await uploadFile(f);
-      const abs = `${process.env.REACT_APP_BACKEND_URL}${url}`;
-      set("font_files", [...(draft.font_files || []), { name, url: abs }]);
+      set("font_files", [...(draft.font_files || []), { name, url }]);
       setFontFileName("");
       toast.success(`Font file "${name}" terunggah — Simpan Draft & Publish untuk menerapkan`);
     } catch (err) { toast.error(fmtErr(err)); }
@@ -129,7 +128,7 @@ export default function AdminAppearance() {
     if (!f) return;
     try {
       const url = await uploadFile(f);
-      set("logo_url", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      set("logo_url", url);
       toast.success("Logo terunggah");
     } catch (err) { toast.error(fmtErr(err)); }
   };
@@ -140,7 +139,7 @@ export default function AdminAppearance() {
     if (!f) return;
     try {
       const url = await uploadFile(f);
-      set("bg_image", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      set("bg_image", url);
       toast.success("Gambar background terunggah");
     } catch (err) { toast.error(fmtErr(err)); }
   };
@@ -151,7 +150,7 @@ export default function AdminAppearance() {
     if (!f) return;
     try {
       const url = await uploadFile(f);
-      set("hero_thumb", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      set("hero_thumb", url);
       toast.success("Thumbnail headline terunggah");
     } catch (err) { toast.error(fmtErr(err)); }
   };
@@ -162,7 +161,7 @@ export default function AdminAppearance() {
     if (!f) return;
     try {
       const url = await uploadFile(f);
-      set("hero_image", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      set("hero_image", url);
       toast.success("Background headline terunggah");
     } catch (err) { toast.error(fmtErr(err)); }
   };

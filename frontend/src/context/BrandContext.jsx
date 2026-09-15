@@ -44,7 +44,8 @@ export function injectFontFace(name, url) {
   if (document.getElementById(id)) return;
   const style = document.createElement("style");
   style.id = id;
-  style.textContent = `@font-face { font-family: '${clean}'; src: url('${url}'); font-display: swap; }`;
+  const rel = typeof url === "string" && url.includes("/api/uploads/") ? url.slice(url.indexOf("/api/uploads/")) : url;
+  style.textContent = `@font-face { font-family: '${clean}'; src: url('${rel}'); font-display: swap; }`;
   document.head.appendChild(style);
 }
 

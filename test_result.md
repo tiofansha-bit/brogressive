@@ -207,10 +207,25 @@
 ##         -agent: "main"
 ##         -comment: "Root cause: opsi dropdown Klien/Coach di dialog Tugaskan Klien mengambil dari state `users` yang terfilter oleh filter tabel & kotak pencarian. Jika admin sedang memfilter role lain / mengetik pencarian, dropdown kosong. Fix: saat dialog dibuka, fetch terpisah GET /api/admin/users?role=client dan role=coach ke state assignLists (bebas filter), reset pilihan, plus empty-state 'Belum ada klien/coach'. Perlu verifikasi testing agent: buka dialog dalam kondisi filter tabel = coach maupun pencarian terisi, dropdown Klien tetap berisi nama klien, dan penugasan end-to-end berhasil."
 ##
+##   - task: "Fix font custom beda di smartphone (CORS @font-face)"
+##     implemented: true
+##     working: "NA"
+##     file: "frontend/src/pages/admin/Appearance.jsx, frontend/src/context/BrandContext.jsx, backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: false
+##         -agent: "user"
+##         -comment: "User melaporkan: tampilan font buka di web smartphone beda."
+##         -working: "NA"
+##         -agent: "main"
+##         -comment: "Root cause: URL font upload (font_files) disimpan ABSOLUT dengan origin preview (REACT_APP_BACKEND_URL). @font-face cross-origin butuh CORS; /api/uploads (StaticFiles) tidak kirim header CORS -> font KaliMayaThin diblokir saat situs dibuka dari origin lain (domain produksi/HP) -> fallback font. <img> tidak butuh CORS makanya logo tetap tampil. Fix: (1) Appearance.jsx simpan URL relatif untuk font_files/logo_url/bg_image/hero_thumb/hero_image; (2) BrandContext.injectFontFace menormalisasi URL absolut /api/uploads -> relatif (data lama otomatis terpakai); (3) server.py UploadsStaticFiles menambah Access-Control-Allow-Origin:* pada /api/uploads; (4) data settings di MongoDB (published+draft) dinormalisasi ke URL relatif."
+##
 ## metadata:
 ##   created_by: "main_agent"
 ##   version: "1.0"
-##   test_sequence: 4
+##   test_sequence: 5
 ##   run_ui: true
 ##
 ## test_plan:
