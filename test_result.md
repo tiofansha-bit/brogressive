@@ -192,10 +192,25 @@
 ##         -agent: "main"
 ##         -comment: "Ditambahkan select activity_level (sedentary/light/moderate/active/very_active, testid ob-activity_level) di step 3 (Latihan) Onboarding.jsx. training_experience tetap ada. Perlu retest full 7 langkah sampai redirect /app/today."
 ##
+##   - task: "Fix dialog Tugaskan Klien: nama klien/coach tidak muncul"
+##     implemented: true
+##     working: "NA"
+##     file: "frontend/src/pages/admin/Users.jsx"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##         -working: false
+##         -agent: "user"
+##         -comment: "User melaporkan: bug di tugaskan klien, nama klien tidak muncul."
+##         -working: "NA"
+##         -agent: "main"
+##         -comment: "Root cause: opsi dropdown Klien/Coach di dialog Tugaskan Klien mengambil dari state `users` yang terfilter oleh filter tabel & kotak pencarian. Jika admin sedang memfilter role lain / mengetik pencarian, dropdown kosong. Fix: saat dialog dibuka, fetch terpisah GET /api/admin/users?role=client dan role=coach ke state assignLists (bebas filter), reset pilihan, plus empty-state 'Belum ada klien/coach'. Perlu verifikasi testing agent: buka dialog dalam kondisi filter tabel = coach maupun pencarian terisi, dropdown Klien tetap berisi nama klien, dan penugasan end-to-end berhasil."
+##
 ## metadata:
 ##   created_by: "main_agent"
 ##   version: "1.0"
-##   test_sequence: 3
+##   test_sequence: 4
 ##   run_ui: true
 ##
 ## test_plan:

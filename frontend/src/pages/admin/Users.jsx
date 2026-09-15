@@ -18,6 +18,7 @@ export default function AdminUsers() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "client" });
   const [assign, setAssign] = useState({ client_id: "", coach_id: "" });
   const [busy, setBusy] = useState(false);
+  const [assignLists, setAssignLists] = useState({ clients: [], coaches: [] });
 
   const load = useCallback(async () => {
     const params = {};
@@ -28,6 +29,20 @@ export default function AdminUsers() {
   }, [filter, q]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    if (!assignOpen) return;
+    setAssign({ client_id: "", coach_id: "" });
+    (async () => {
+      try {
+        const [cl, co] = await Promise.all([
+          API.get("/admin/users", { params: { role: "client" } }),
+          API.get("/admin/users", { params: { role: "coach" } }),
+        ]);
+        setAssignLists({ clients: cl.data, coaches: co.data });
+      } catch (e) { toast.error(fmtErr(e)); }
+    })();
+  }, [assignOpen]);
 
   const createUser = async () => {
     setBusy(true);
@@ -58,9 +73,6 @@ export default function AdminUsers() {
     } catch (e) { toast.error(fmtErr(e)); }
   };
 
-  const clients = users.filter((u) => u.role === "client");
-  const coaches = users.filter((u) => u.role === "coach");
-
   return (
     <div data-testid="admin-users-page" className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -80,14 +92,20 @@ export default function AdminUsers() {
                   <Label>Klien</Label>
                   <Select value={assign.client_id} onValueChange={(v) => setAssign({ ...assign, client_id: v })}>
                     <SelectTrigger data-testid="assign-client-select" className="mt-1 bg-background"><SelectValue placeholder="Pilih klien" /></SelectTrigger>
-                    <SelectContent>{clients.map((c) => <SelectItem key={c.user_id} value={c.user_id}>{c.name} ({c.email})</SelectItem>)}</SelectContent>
+                    <SelectContent>
+                      {assignLists.clients.length === 0 && <SelectItem value="__empty" disabled>Belum ada klien</SelectItem>}
+                      {assignLists.clients.map((c) => <SelectItem key={c.user_id} value={c.user_id}>{c.name} ({c.email})</SelectItem>)}
+                    </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Coach</Label>
                   <Select value={assign.coach_id} onValueChange={(v) => setAssign({ ...assign, coach_id: v })}>
                     <SelectTrigger data-testid="assign-coach-select" className="mt-1 bg-background"><SelectValue placeholder="Pilih coach" /></SelectTrigger>
-                    <SelectContent>{coaches.map((c) => <SelectItem key={c.user_id} value={c.user_id}>{c.name} ({c.email})</SelectItem>)}</SelectContent>
+                    <SelectContent>
+                      {assignLists.coaches.length === 0 && <SelectItem value="__empty" disabled>Belum ada coach</SelectItem>}
+                      {assignLists.coaches.map((c) => <SelectItem key={c.user_id} value={c.user_id}>{c.name} ({c.email})</SelectItem>)}
+                    </SelectContent>
                   </Select>
                 </div>
                 <Button data-testid="assign-submit" onClick={doAssign} disabled={busy || !assign.client_id || !assign.coach_id} className="w-full">

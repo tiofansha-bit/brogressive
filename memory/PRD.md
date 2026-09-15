@@ -9,6 +9,7 @@
   2. Onboarding.jsx: komponen F/Sel inline -> remount input per ketukan (fokus hilang = "ketik tidak sustain"); fix OnbField/OnbSelect module-level.
   3. Onboarding.jsx: tombol Kembali di step 0 disabled permanen -> kini navigate(-1); step>0 save(step-1).
   4. Onboarding.jsx: wizard tidak menanyakan activity_level yang diwajibkan REQUIRED_ONBOARDING -> completeness mentok 90% & finish selalu 400; fix select activity_level di step 3. Full 7 langkah tuntas -> /app/today.
+  5. Admin Users.jsx (dialog Tugaskan Klien): dropdown Klien/Coach mengambil dari state tabel yang terfilter -> nama tidak muncul saat filter/pencarian aktif; fix fetch terpisah ?role=client & ?role=coach saat dialog dibuka (assignLists) + empty-state. Terverifikasi testing agent iter 5 (100% PASS).
 - Kredensial terdokumentasi di /app/memory/test_credentials.md.
 
 ## Problem Statement (ringkasan)

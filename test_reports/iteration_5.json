@@ -1,0 +1,23 @@
+{
+  "summary": "Frontend regression test for bug fix on 'Tugaskan Klien' dialog in /app/users. All scenarios PASSED: client/coach dropdowns remain populated regardless of table filter (filter-coach, filter-client) or search-emptied table. E2E assignment succeeds and coach name appears in table. No console errors on repeated dialog open/close.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Users.jsx: uses SelectItem value='__empty' which is fine because disabled, but consider showing loading spinner while assignLists is fetching to distinguish from truly empty state.",
+    "assignLists is not refreshed after successful assignment; harmless because dialog closes, but if reopened quickly, cached list is used (acceptable)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "test_credentials": "admin: tiofansha@gmail.com / Brogressive#2026",
+  "seed_data_creation": "Used existing coach 'Test Coach (test_coach_a45315@test.com)'. Assigned Finish Tester (finish.1789452796@mail.com) -> Test Coach for verification.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug fix for assignLists (separate fetch of clients/coaches independent from table filters) is verified working on preview URL. Verified via: (1) filter=coach → open dialog → client dropdown has 11 clients; (2) filter=client → coach dropdown has 1 coach; (3) search returning empty table still shows full dropdowns; (4) E2E assign succeeded, coach name displayed in row. Only 401 on /api/auth/me before login (expected).",
+  "rca of the issue": "Previous code reused the filtered `users` state for both dropdowns in the assign dialog, so applying role filter or search would empty the dropdowns. Fix decouples fetch: on assignOpen=true, GET /api/admin/users?role=client and ?role=coach populates independent assignLists state; SelectContent maps assignLists.clients/coaches with empty-state fallbacks. Verified end-to-end."
+}
