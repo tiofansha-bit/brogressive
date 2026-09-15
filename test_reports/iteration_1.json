@@ -1,0 +1,40 @@
+{
+  "summary": "First full round of testing for BROGRESSIVE. Wrote comprehensive pytest backend suite (45 tests) covering auth, RBAC, admin (users/assignments/appearance/packages/enrollment), onboarding, plans (nutrition 409 confirm + training publish), all logs (weight/meal/daily/workout), check-in wizard flow, messages, enhanced self-report, payments upload+verify. All 45 backend tests PASS. Frontend smoke: landing, admin login/dashboard/users/appearance/packages, coach login/dashboard/Client360, client login/Today/Program/Log/Progress/Chat all render correctly with data from backend. Data-testids present on login page and landing.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Client bottom nav", "issues": ["OK - 5 items (Hari Ini, Program, Catat, Progres, Coach) render as spec"]},
+      {"screen": "Console", "issues": ["Two 401s appear at /login before user authenticates - expected behavior from /api/auth/me probe but noisy; consider suppressing initial 401 in AuthContext or gating the call until token cookie exists"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional: Silence /api/auth/me 401 on public /login and /landing pages by gating the initial call in AuthContext or handling 401 silently to avoid noisy console errors.",
+    "Optional: Add explicit data-testid attributes to admin/coach/client interactive elements (Buat Akun dialog inputs, Tugaskan Klien dialog, Nutrition Builder calculator, Training Builder set rows, Checkin wizard steps, bottom nav items) to enable more granular UI regression testing."
+  ],
+  "critical_code_review_comments": [
+    "server.py is a monolith at 1458 lines - recommend splitting into routers (auth.py, admin.py, plans.py, logs.py, checkins.py, messages.py) for maintainability.",
+    "CORSMiddleware.allow_origins reads FRONTEND_URL but backend/.env has CORS_ORIGINS=\"*\" which is unused - potential confusion (works with credentials because explicit origin is set). Fine as-is but remove CORS_ORIGINS.",
+    "get_current_user returns 401 without WWW-Authenticate header (minor).",
+    "In publish_plan the request.json() call for non-JSON content-type is skipped (correct) - OK.",
+    "messages/{other_id} check for coach uses require_client_access which is correct; for admin case allows any partner.",
+    "Onboarding: parq_flags treated as boolean via bool(data.get('parq_flags')) - if front-end sends a list of flags this becomes True; naming a bit ambiguous but consistent.",
+    "Frontend/App.js: hash-based session_id handled at every route change - AuthCallback renders in place of Routes when hash present, works.",
+    "Backend does NOT set access_token cookie on google-session (only session_token). That is intentional but /api/auth/me handles both paths correctly via cookie or Bearer."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/memory/test_credentials.md"
+  ],
+  "success_rate": { "backend": "100% (45/45)", "frontend": "100% smoke (landing, admin dashboard/users/appearance/packages, coach dashboard/Client360, client Today/Program/Log/Progress/Chat)" },
+  "test_credentials": "Admin: tiofansha@gmail.com / Brogressive#2026. Test coach/client accounts are created per-run by backend_test.py with random 6-char suffix (e.g. test_coach_019897@test.com / Coach12345, test_client_019897@test.com / Client12345). These UI-visible test accounts persist across runs.",
+  "seed_data_creation": "Per test run backend_test.py creates 1 coach, 2 clients (1 assigned+enrolled+onboarded, 1 unassigned for RBAC test), 1 package (TEST_Paket_*), 1 nutrition plan (active v1, macro-mismatch 409-then-confirm), 1 training plan (active v1), weight/meal/daily/workout logs, 1 check-in (responded), 2 messages, 1 enhanced entry, 1 payment proof (verified). Admin seeded with real credentials. 26 foods + 22 exercises + 1 default package auto-seeded by server on startup.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend_test.py uses `-n 0` (serial) via pytest.ini xdist because tests share session state via a fixture dict. Run with: pytest /app/backend/tests/backend_test.py -n 0 -v. All 45 tests pass in ~7s. Frontend smoke was limited to page-load + a few interactions; for deeper Playwright regressions the app would benefit from more data-testids on admin dialogs (Buat Akun, Tugaskan Klien), NutritionBuilder calculator/publish, TrainingBuilder set rows, Checkin wizard, and bottom-nav items."
+}

@@ -1,0 +1,89 @@
+{
+  "brand_identity": {
+    "name": "BROGRESSIVE 1 on 1 Online Coaching",
+    "tagline": "Systematic Athletic Progression & Bodybuilding Elite Coaching",
+    "language": "Indonesian (Layman Indonesian for Client View, Professional Technical for Coach/Admin)",
+    "aesthetic_archetype": "Archetype 2: The Performance Pro (Tactical Athletic Dark Mode)",
+    "tone": "Commanding, scientific, encouraging, frictionless, ultra-modern"
+  },
+  "typography": {
+    "font_family_headings": "Barlow Condensed, Bebas Neue, sans-serif",
+    "font_family_body": "Inter, DM Sans, sans-serif",
+    "font_family_metrics": "JetBrains Mono, Roboto Mono, monospace",
+    "font_scale": {
+      "h1_hero": "text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none",
+      "h2_section": "text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight",
+      "h3_card": "text-xl sm:text-2xl font-bold tracking-normal",
+      "h4_widget": "text-lg sm:text-xl font-semibold",
+      "body_base": "text-base font-normal leading-relaxed text-zinc-300",
+      "body_small": "text-sm font-normal text-zinc-400",
+      "caption_labels": "text-xs font-mono uppercase tracking-widest text-zinc-400"
+    }
+  },
+  "colors": {
+    "theme": "Dark Mode Default with High-Contrast Athletic Accents",
+    "background_primary": "#0A0A0C",
+    "background_secondary": "#121216",
+    "background_card": "#18181F",
+    "background_elevated": "#22222B",
+    "accent_primary": "#FF2E00",
+    "accent_primary_hover": "#E02800",
+    "accent_glow": "rgba(255, 46, 0, 0.25)",
+    "accent_secondary": "#00F0FF",
+    "accent_warning_rpe": "#FFB800",
+    "accent_success": "#10B981",
+    "text_primary": "#FFFFFF",
+    "text_muted": "#A1A1AA",
+    "text_disabled": "#52525B",
+    "border_subtle": "rgba(255, 255, 255, 0.08)",
+    "border_active": "rgba(255, 46, 0, 0.5)"
+  },
+  "spacing_and_layout": {
+    "padding_philosophy": "Generous spacing system (p-6 to p-12 for containers) with strict internal padding to prevent collision",
+    "bento_grid_mode": "MODE B High Density for Dashboards / MODE A Tetris for Landing & Appearance Builder",
+    "client_easy_mode": {
+      "default_for_client": true,
+      "max_bottom_nav_items": 5,
+      "bottom_nav_labels": ["Hari Ini", "Program", "Catat", "Progres", "Coach"],
+      "primary_cta_above_fold": "Single contextual action button (e.g., 'Mulai Latihan Hari Ini', 'Isi Check-in Mingguan')",
+      "tap_target_min_height": "h-14 (56px minimum touch area)"
+    }
+  },
+  "component_guidelines": {
+    "landing_and_appearance_builder": {
+      "structure": "Pure React + Tailwind with customizable live preview engine (desktop + mobile viewport toggles)",
+      "sections": ["Hero Banner", "About Coach", "Transformation Wall", "Coaching Programs/Packages", "Testimonial Carousel", "FAQ Accordion", "CTAs"]
+    },
+    "workout_execution": {
+      "layout": "One exercise per screen with large progress indicator, exercise gif/video, set row table with Previous Weight/Reps, Target Weight/Reps, RPE/RIR badge, and Rest Timer popover",
+      "controls": "Set completion toggle button with immediate visual feedback and haptic-style transition"
+    },
+    "nutrition_builder": {
+      "calculator": "Mifflin-St Jeor BMR calculator integrated with Activity Factor (1.2 to 1.9) and Goal Adjustment (Cut/Maintenance/Bulk)",
+      "macros": "Protein (4 kcal/g), Carbs (4 kcal/g), Fats (9 kcal/g) visual pie/bar split with preset macro templates"
+    },
+    "checkin_wizard": {
+      "steps": ["Status Berat & Tubuh", "Foto Progres (Depan, Samping, Belakang)", "Catatan Adherence & Tidur", "Evaluasi Coach"],
+      "uploader": "Multi-angle photo preview card with zoom and side-by-side historical comparison"
+    }
+  },
+  "media_assets": {
+    "hero_bodybuilder_dark": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxib2R5YnVpbGRlciUyMHRyYWluaW5nJTIwZ3ltJTIwZGFyayUyMG1vb2R8ZW58MHx8fHwxNzg5NDM4OTY2fDA&ixlib=rb-4.1.0&q=85",
+    "gym_workout_intensity": "https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHw0fHxib2R5YnVpbGRlciUyMHRyYWluaW5nJTIwZ3ltJTIwZGFyayUyMG1vb2R8ZW58MHx8fHwxNzg5NDM4OTY2fDA&ixlib=rb-4.1.0&q=85",
+    "meal_prep_clean_macro": "https://images.unsplash.com/photo-1579619168313-d2e074a7ee02?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTN8MHwxfHNlYXJjaHw0fHxoZWFsdGh5JTIwbWVhbCUyMHByZXAlMjBjaGlja2VuJTIwcmljZSUyMGJyb2Njb2xpfGVufDB8fHx8MTc4OTQzODk3NHww&ixlib=rb-4.1.0&q=85",
+    "coach_profile_avatar": "https://images.unsplash.com/photo-1758875568932-0eefd3e60090?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTN8MHwxfHNlYXJjaHwzfHxmaXRuZXNzJTIwY29hY2glMjBwZXJzb25hbCUyMHRyYWluaW5nJTIwZ3ltJTIwZGFyayUyMG1vb2R8ZW58MHx8fHwxNzg5NDM4OTc4fDA&ixlib=rb-4.1.0&q=85"
+  },
+  "testing_and_accessibility": {
+    "data_testid_rule": "ALL interactive components (buttons, tabs, inputs, cards, check-in photos, chat items) MUST contain unique, descriptive data-testid attributes (e.g. data-testid='client-bottom-nav-hari-ini', data-testid='start-workout-cta')",
+    "contrast_standard": "APCA & WCAG AA minimum 4.5:1 ratio for normal text on dark surface",
+    "hover_focus_states": "Focus ring 2px #FF2E00 with explicit text contrast setting on hover"
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the dark tactical athletic aesthetic using #0A0A0C base and #FF2E00 primary accent.",
+    "Implement Client Easy Mode as DEFAULT view when role is 'client', featuring fixed bottom nav with 5 items: Hari Ini, Program, Catat, Progres, Coach.",
+    "Ensure all interactive elements have data-testid attributes in kebab-case.",
+    "Do not use generic Inter font for headings; use Barlow Condensed or Bebas Neue font classes for strong athletic impact.",
+    "Use Indonesian language for client interactions ('Latihan Hari Ini', 'Hitung Makro', 'Upload Foto Progres').",
+    "Ensure appearance builder provides real-time desktop and mobile canvas toggle previews."
+  ]
+}
