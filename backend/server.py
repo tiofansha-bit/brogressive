@@ -372,6 +372,8 @@ DEFAULT_APPEARANCE = {
     "bg_image": "",
     "hero_thumb": "",
     "hero_thumb_enabled": True,
+    "hero_overlay": 70,
+    "hero_position": "center",
     "font_heading": "Anton",
     "font_body": "Space Grotesk",
     "cta_login": "Masuk",

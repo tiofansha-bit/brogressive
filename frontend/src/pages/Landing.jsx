@@ -33,9 +33,12 @@ export default function Landing() {
       {s.hero && (
         <section className="relative min-h-[92vh] flex items-end" data-testid="landing-hero">
           {a.hero_image && (
-            <img src={a.hero_image} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+            <img src={a.hero_image} alt="Hero" className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: a.hero_position || "center" }} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
+          {(a.hero_overlay ?? 0) > 0 && (
+            <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${(a.hero_overlay ?? 0) / 100})` }} />
+          )}
           <div className="relative max-w-6xl mx-auto px-4 pb-24 pt-40 w-full flex flex-col-reverse md:flex-row md:items-end gap-8">
             <div className="flex-1 min-w-0">
               <p className="eyebrow mb-4">{a.tagline}</p>
