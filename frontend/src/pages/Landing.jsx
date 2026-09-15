@@ -36,17 +36,24 @@ export default function Landing() {
             <img src={a.hero_image} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
-          <div className="relative max-w-6xl mx-auto px-4 pb-24 pt-40 w-full">
-            <p className="eyebrow mb-4">{a.tagline}</p>
-            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-none max-w-3xl" data-testid="landing-headline">
-              {a.hero_headline}
-            </h1>
-            <p className="mt-5 text-base sm:text-lg text-zinc-300 max-w-xl">{a.hero_subheadline}</p>
-            <Link to="/login">
-              <Button data-testid="landing-hero-cta" size="lg" className="mt-8 h-14 px-8 text-base font-bold uppercase tracking-wider glow-primary">
-                {a.hero_cta}
-              </Button>
-            </Link>
+          <div className="relative max-w-6xl mx-auto px-4 pb-24 pt-40 w-full flex flex-col-reverse md:flex-row md:items-end gap-8">
+            <div className="flex-1 min-w-0">
+              <p className="eyebrow mb-4">{a.tagline}</p>
+              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-none max-w-3xl" data-testid="landing-headline">
+                {a.hero_headline}
+              </h1>
+              <p className="mt-5 text-base sm:text-lg text-zinc-300 max-w-xl">{a.hero_subheadline}</p>
+              <Link to="/login">
+                <Button data-testid="landing-hero-cta" size="lg" className="mt-8 h-14 px-8 text-base font-bold uppercase tracking-wider glow-primary">
+                  {a.hero_cta}
+                </Button>
+              </Link>
+            </div>
+            {a.hero_thumb_enabled !== false && a.hero_thumb && (
+              <div className="shrink-0 w-44 sm:w-60 md:w-72 lg:w-80" data-testid="landing-hero-thumb">
+                <img src={a.hero_thumb} alt={a.hero_headline} className="w-full aspect-[4/5] object-cover rounded-lg border border-border shadow-2xl" />
+              </div>
+            )}
           </div>
         </section>
       )}

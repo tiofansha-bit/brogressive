@@ -21,6 +21,7 @@ function MiniLanding({ a, mobile }) {
       style={{ backgroundColor: a.bg_color || "#0A0A0C", backgroundImage: a.bg_image ? `linear-gradient(rgba(5,5,5,0.82), rgba(5,5,5,0.82)), url('${a.bg_image}')` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
       <div className="relative h-48">
         {a.hero_image && <img src={a.hero_image} alt="hero" className="absolute inset-0 w-full h-full object-cover" />}
+        {a.hero_thumb_enabled !== false && a.hero_thumb && <img src={a.hero_thumb} alt="thumb" className="absolute right-2 top-2 w-16 h-20 object-cover rounded border border-zinc-700 z-10" />}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] to-transparent" />
         <div className="absolute bottom-3 left-3 right-3">
           <p className="text-[9px] uppercase tracking-widest text-zinc-400">{a.tagline}</p>
@@ -140,6 +141,17 @@ export default function AdminAppearance() {
       const url = await uploadFile(f);
       set("bg_image", `${process.env.REACT_APP_BACKEND_URL}${url}`);
       toast.success("Gambar background terunggah");
+    } catch (err) { toast.error(fmtErr(err)); }
+  };
+
+  const uploadThumb = async (e) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    try {
+      const url = await uploadFile(f);
+      set("hero_thumb", `${process.env.REACT_APP_BACKEND_URL}${url}`);
+      toast.success("Thumbnail headline terunggah");
     } catch (err) { toast.error(fmtErr(err)); }
   };
 
@@ -278,6 +290,21 @@ export default function AdminAppearance() {
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Teks CTA</Label><Input data-testid="ap-hero-cta" className="mt-1 bg-background" value={draft.hero_cta || ""} onChange={(e) => set("hero_cta", e.target.value)} /></div>
               <div><Label>Hero Image URL</Label><Input data-testid="ap-hero-image" className="mt-1 bg-background text-xs" value={draft.hero_image || ""} onChange={(e) => set("hero_image", e.target.value)} /></div>
+            </div>
+            <div>
+              <Label>Thumbnail Headline (gambar/grafik di samping headline)</Label>
+              <div className="flex gap-2 mt-1 items-center">
+                <Input data-testid="ap-hero-thumb" className="bg-background text-xs" value={draft.hero_thumb || ""} onChange={(e) => set("hero_thumb", e.target.value)} placeholder="URL gambar/grafik atau unggah" />
+                <label className="shrink-0">
+                  <input type="file" accept="image/*" className="hidden" data-testid="ap-hero-thumb-upload" onChange={uploadThumb} />
+                  <span className="inline-flex items-center gap-1 px-3 h-9 rounded-md border border-border text-xs cursor-pointer hover:bg-accent"><Upload className="w-3 h-3" /> Upload</span>
+                </label>
+                {draft.hero_thumb && <Button data-testid="ap-hero-thumb-clear" size="sm" variant="ghost" onClick={() => set("hero_thumb", "")}>Hapus</Button>}
+              </div>
+              <label className="flex items-center justify-between bg-background rounded-md px-3 py-2 mt-2">
+                <span className="text-sm">Tampilkan thumbnail headline</span>
+                <Switch data-testid="ap-hero-thumb-toggle" checked={draft.hero_thumb_enabled !== false} onCheckedChange={(v) => set("hero_thumb_enabled", v)} />
+              </label>
             </div>
             <div><Label>Judul Tentang</Label><Input data-testid="ap-about-title" className="mt-1 bg-background" value={draft.about_title || ""} onChange={(e) => set("about_title", e.target.value)} /></div>
             <div><Label>Teks Tentang</Label><Textarea data-testid="ap-about-text" rows={3} className="mt-1 bg-background" value={draft.about_text || ""} onChange={(e) => set("about_text", e.target.value)} /></div>
