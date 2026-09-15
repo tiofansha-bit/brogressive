@@ -372,6 +372,7 @@ DEFAULT_APPEARANCE = {
     "font_body": "Space Grotesk",
     "cta_login": "Masuk",
     "custom_fonts": [],
+    "font_files": [],
     "hero_headline": "Bangun Versi Terkuat Dirimu.",
     "hero_subheadline": "Coaching bodybuilding 1-on-1 yang sistematis: nutrisi presisi, program latihan terperiodisasi, dan evaluasi mingguan bersama coach profesional.",
     "hero_cta": "Mulai Coaching",
@@ -1355,14 +1356,14 @@ async def get_enhanced(client_id: Optional[str] = None, user: dict = Depends(get
 
 # ============ UPLOADS ============
 
-ALLOWED_EXT = {".png", ".jpg", ".jpeg", ".webp", ".pdf"}
+ALLOWED_EXT = {".png", ".jpg", ".jpeg", ".webp", ".pdf", ".otf", ".ttf", ".woff", ".woff2"}
 
 
 @api_router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_EXT:
-        raise HTTPException(400, "Format file tidak didukung (png/jpg/webp/pdf)")
+        raise HTTPException(400, "Format file tidak didukung (png/jpg/webp/pdf/otf/ttf/woff/woff2)")
     content = await file.read()
     if len(content) > 8 * 1024 * 1024:
         raise HTTPException(400, "File maksimal 8MB")

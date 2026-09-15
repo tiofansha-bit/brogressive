@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { API, fmtErr, fmtDate, uploadFile } from "@/lib/api";
-import { useBrand } from "@/context/BrandContext";
+import { useBrand, loadGoogleFont, injectFontFace } from "@/context/BrandContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +41,7 @@ export default function AdminAppearance() {
   const [mobile, setMobile] = useState(false);
   const [busy, setBusy] = useState(false);
   const [newFont, setNewFont] = useState("");
+  const [fontFileName, setFontFileName] = useState("");
   const { reloadBrand } = useBrand();
 
   const load = useCallback(async () => {
@@ -51,6 +52,14 @@ export default function AdminAppearance() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    if (!draft) return;
+    (draft.font_files || []).forEach((f) => injectFontFace(f.name, f.url));
+    (draft.custom_fonts || []).forEach(loadGoogleFont);
+    loadGoogleFont(draft.font_heading);
+    loadGoogleFont(draft.font_body);
+  }, [draft]);
 
   if (!draft) return <p className="text-muted-foreground">Memuat...</p>;
 
@@ -72,6 +81,21 @@ export default function AdminAppearance() {
     set("custom_fonts", [...customs, name]);
     setNewFont("");
     toast.success(`Font "${name}" ditambahkan — Simpan Draft & Publish untuk menerapkan`);
+  };
+
+  const uploadFontFile = async (e) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    const name = (fontFileName || f.name.replace(/\.(otf|ttf|woff2?)$/i, "")).trim().replace(/[^A-Za-z0-9 ]/g, "").replace(/\s+/g, " ");
+    if (!name) { toast.error("Isi nama font terlebih dahulu"); return; }
+    try {
+      const url = await uploadFile(f);
+      const abs = `${process.env.REACT_APP_BACKEND_URL}${url}`;
+      set("font_files", [...(draft.font_files || []), { name, url: abs }]);
+      setFontFileName("");
+      toast.success(`Font file "${name}" terunggah — Simpan Draft & Publish untuk menerapkan`);
+    } catch (err) { toast.error(fmtErr(err)); }
   };
 
   const saveDraft = async () => {
@@ -170,7 +194,7 @@ export default function AdminAppearance() {
                 <Select value={draft.font_heading || "Anton"} onValueChange={(v) => set("font_heading", v)}>
                   <SelectTrigger data-testid="ap-font-heading" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[...new Set([...HEADING_FONTS, ...(draft.custom_fonts || [])])].map((f) => (
+                    {[...new Set([...HEADING_FONTS, ...(draft.custom_fonts || []), ...(draft.font_files || []).map((f) => f.name)])].map((f) => (
                       <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
                     ))}
                   </SelectContent>
@@ -181,7 +205,7 @@ export default function AdminAppearance() {
                 <Select value={draft.font_body || "Space Grotesk"} onValueChange={(v) => set("font_body", v)}>
                   <SelectTrigger data-testid="ap-font-body" className="mt-1 bg-background"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[...new Set([...BODY_FONTS, ...(draft.custom_fonts || [])])].map((f) => (
+                    {[...new Set([...BODY_FONTS, ...(draft.custom_fonts || []), ...(draft.font_files || []).map((f) => f.name)])].map((f) => (
                       <SelectItem key={f} value={f}><span style={{ fontFamily: `'${f}', sans-serif` }}>{f}</span></SelectItem>
                     ))}
                   </SelectContent>
@@ -199,7 +223,21 @@ export default function AdminAppearance() {
                 ))}
               </div>
             )}
-            <p className="text-[11px] text-muted-foreground">Font kustom diambil dari Google Fonts (fonts.google.com) — salin nama font persis seperti di sana. Berlaku di landing page & aplikasi setelah Publish.</p>
+            <div className="flex gap-2">
+              <Input data-testid="ap-font-file-name" placeholder="Nama font file (mis. Gotham Bold)" className="bg-background" value={fontFileName} onChange={(e) => setFontFileName(e.target.value)} />
+              <label className="shrink-0">
+                <input data-testid="ap-font-file" type="file" accept=".otf,.ttf,.woff,.woff2" className="hidden" onChange={uploadFontFile} />
+                <span className="inline-flex items-center gap-1 px-3 h-9 rounded-md border border-border text-xs cursor-pointer hover:bg-accent whitespace-nowrap"><Upload className="w-3 h-3" /> Upload .otf / .ttf / .woff / .woff2</span>
+              </label>
+            </div>
+            {(draft.font_files || []).length > 0 && (
+              <div className="flex gap-1.5 flex-wrap">
+                {draft.font_files.map((f) => (
+                  <span key={f.name} className="text-[10px] px-2 py-1 rounded-full border border-primary/50 text-foreground" style={{ fontFamily: `'${f.name}', sans-serif` }}>{f.name} (file)</span>
+                ))}
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground">Font kustom diambil dari Google Fonts (fonts.google.com) atau upload file font Anda sendiri — berlaku di landing page & aplikasi setelah Publish.</p>
           </section>
 
           <section className="bg-card border border-border rounded-lg p-4 space-y-3">

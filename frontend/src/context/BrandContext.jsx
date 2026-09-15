@@ -37,6 +37,17 @@ export function loadGoogleFont(name) {
   document.head.appendChild(link);
 }
 
+export function injectFontFace(name, url) {
+  const clean = (name || "").trim();
+  if (!clean || !FONT_RE.test(clean) || !url) return;
+  const id = `gff-${clean.replace(/ /g, "-")}`;
+  if (document.getElementById(id)) return;
+  const style = document.createElement("style");
+  style.id = id;
+  style.textContent = `@font-face { font-family: '${clean}'; src: url('${url}'); font-display: swap; }`;
+  document.head.appendChild(style);
+}
+
 export function applyBrand(a) {
   if (!a) return;
   const hsl = hexToHsl(a.primary_color);
@@ -46,15 +57,18 @@ export function applyBrand(a) {
   }
   const acc = hexToHsl(a.accent_color);
   if (acc) document.documentElement.style.setProperty("--neon", acc);
+  const fileFonts = a.font_files || [];
+  fileFonts.forEach((f) => injectFontFace(f.name, f.url));
+  const fileNames = new Set(fileFonts.map((f) => f.name));
   if (a.font_heading && FONT_RE.test(a.font_heading)) {
     document.documentElement.style.setProperty("--font-heading", `'${a.font_heading}'`);
-    loadGoogleFont(a.font_heading);
+    if (!fileNames.has(a.font_heading)) loadGoogleFont(a.font_heading);
   }
   if (a.font_body && FONT_RE.test(a.font_body)) {
     document.documentElement.style.setProperty("--font-body", `'${a.font_body}'`);
-    loadGoogleFont(a.font_body);
+    if (!fileNames.has(a.font_body)) loadGoogleFont(a.font_body);
   }
-  (a.custom_fonts || []).forEach(loadGoogleFont);
+  (a.custom_fonts || []).forEach((f) => { if (!fileNames.has(f)) loadGoogleFont(f); });
   if (a.seo?.title) document.title = a.seo.title;
   if (a.seo?.description) {
     let m = document.querySelector('meta[name="description"]');
